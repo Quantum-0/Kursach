@@ -1,0 +1,6 @@
+F:\Cloud\То што я деляль\Код\C#\SuffixTree\bin\Debug\SuffixTree.exe.config
+F:\Cloud\То што я деляль\Код\C#\SuffixTree\bin\Debug\SuffixTree.exe
+F:\Cloud\То што я деляль\Код\C#\SuffixTree\bin\Debug\SuffixTree.pdb
+F:\Cloud\То што я деляль\Код\C#\SuffixTree\obj\Debug\SuffixTree.csprojResolveAssemblyReference.cache
+F:\Cloud\То што я деляль\Код\C#\SuffixTree\obj\Debug\SuffixTree.exe
+F:\Cloud\То што я деляль\Код\C#\SuffixTree\obj\Debug\SuffixTree.pdb
