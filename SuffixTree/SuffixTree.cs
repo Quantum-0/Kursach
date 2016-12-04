@@ -42,7 +42,6 @@ namespace SuffixTree
         public char Char;
         public long Count;
         public virtual IList<Node> Childs { get; set; }
-        //public NodeChildsCollection<Node> Childs { get; set; }
 
         public Node(Char Char)
         {
@@ -123,7 +122,6 @@ namespace SuffixTree
 
     public class SyncCharTree : CharTree
     {
-
         public SyncCharTree()
         {
             Root = new SynchronousNode('\0');
