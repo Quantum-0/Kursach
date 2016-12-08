@@ -1,0 +1,9 @@
+F:\Cloud\То што я деляль\Код\C#\Курсач (3 курс)\GUI\bin\Debug\GUI.exe.config
+F:\Cloud\То што я деляль\Код\C#\Курсач (3 курс)\GUI\bin\Debug\GUI.exe
+F:\Cloud\То што я деляль\Код\C#\Курсач (3 курс)\GUI\bin\Debug\GUI.pdb
+F:\Cloud\То што я деляль\Код\C#\Курсач (3 курс)\GUI\obj\Debug\GUI.csprojResolveAssemblyReference.cache
+F:\Cloud\То што я деляль\Код\C#\Курсач (3 курс)\GUI\obj\Debug\GUI.MainForm.resources
+F:\Cloud\То што я деляль\Код\C#\Курсач (3 курс)\GUI\obj\Debug\GUI.Properties.Resources.resources
+F:\Cloud\То што я деляль\Код\C#\Курсач (3 курс)\GUI\obj\Debug\GUI.csproj.GenerateResource.Cache
+F:\Cloud\То што я деляль\Код\C#\Курсач (3 курс)\GUI\obj\Debug\GUI.exe
+F:\Cloud\То што я деляль\Код\C#\Курсач (3 курс)\GUI\obj\Debug\GUI.pdb
