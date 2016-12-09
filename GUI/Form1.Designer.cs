@@ -62,10 +62,19 @@
             this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.dataGridFilesProcessing = new System.Windows.Forms.DataGridView();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridStatistics)).BeginInit();
             this.menuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridFilesProcessing)).BeginInit();
             this.SuspendLayout();
             // 
             // chart
@@ -107,7 +116,7 @@
             series2.YValuesPerPoint = 4;
             this.chart.Series.Add(series1);
             this.chart.Series.Add(series2);
-            this.chart.Size = new System.Drawing.Size(364, 254);
+            this.chart.Size = new System.Drawing.Size(364, 180);
             this.chart.TabIndex = 0;
             this.chart.Text = "chart1";
             this.chart.Visible = false;
@@ -130,7 +139,7 @@
             this.dataGridStatistics.RowHeadersVisible = false;
             this.dataGridStatistics.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dataGridStatistics.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.dataGridStatistics.Size = new System.Drawing.Size(275, 254);
+            this.dataGridStatistics.Size = new System.Drawing.Size(275, 180);
             this.dataGridStatistics.TabIndex = 2;
             // 
             // Column1
@@ -178,7 +187,7 @@
             this.закрытьToolStripMenuItem.Name = "закрытьToolStripMenuItem";
             this.закрытьToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.закрытьToolStripMenuItem.Text = "Новый";
-            this.закрытьToolStripMenuItem.Click += new System.EventHandler(this.закрытьToolStripMenuItem_Click);
+            this.закрытьToolStripMenuItem.Click += new System.EventHandler(this.NewFile_Click);
             // 
             // новыйToolStripMenuItem
             // 
@@ -192,14 +201,14 @@
             this.сохранитьToolStripMenuItem.Name = "сохранитьToolStripMenuItem";
             this.сохранитьToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.сохранитьToolStripMenuItem.Text = "Сохранить";
-            this.сохранитьToolStripMenuItem.Click += new System.EventHandler(this.сохранитьToolStripMenuItem_Click);
+            this.сохранитьToolStripMenuItem.Click += new System.EventHandler(this.SaveFile_Click);
             // 
             // сохранитьКакToolStripMenuItem
             // 
             this.сохранитьКакToolStripMenuItem.Name = "сохранитьКакToolStripMenuItem";
             this.сохранитьКакToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.сохранитьКакToolStripMenuItem.Text = "Сохранить как";
-            this.сохранитьКакToolStripMenuItem.Click += new System.EventHandler(this.сохранитьКакToolStripMenuItem_Click);
+            this.сохранитьКакToolStripMenuItem.Click += new System.EventHandler(this.SaveAsFile_Click);
             // 
             // добавитьКТекущемуToolStripMenuItem
             // 
@@ -238,6 +247,7 @@
             this.обработатьПапкуСФайламиToolStripMenuItem.Name = "обработатьПапкуСФайламиToolStripMenuItem";
             this.обработатьПапкуСФайламиToolStripMenuItem.Size = new System.Drawing.Size(237, 22);
             this.обработатьПапкуСФайламиToolStripMenuItem.Text = "Обработать папку с файлами";
+            this.обработатьПапкуСФайламиToolStripMenuItem.Click += new System.EventHandler(this.обработатьПапкуСФайламиToolStripMenuItem_Click);
             // 
             // wikipediaToolStripMenuItem
             // 
@@ -253,6 +263,7 @@
             this.обработатьСлучайнуюСтатьюToolStripMenuItem.Name = "обработатьСлучайнуюСтатьюToolStripMenuItem";
             this.обработатьСлучайнуюСтатьюToolStripMenuItem.Size = new System.Drawing.Size(358, 22);
             this.обработатьСлучайнуюСтатьюToolStripMenuItem.Text = "Обработать случайную статью";
+            this.обработатьСлучайнуюСтатьюToolStripMenuItem.Click += new System.EventHandler(this.обработатьСлучайнуюСтатьюToolStripMenuItem_Click);
             // 
             // запуститьОбработкуToolStripMenuItem
             // 
@@ -332,7 +343,7 @@
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripProgressBar1,
             this.toolStripStatusLabel1});
-            this.statusStrip.Location = new System.Drawing.Point(0, 284);
+            this.statusStrip.Location = new System.Drawing.Point(0, 417);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(669, 22);
             this.statusStrip.TabIndex = 8;
@@ -354,11 +365,90 @@
             // 
             this.openFileDialog.Filter = "Текстовый файл|*.*";
             // 
+            // dataGridFilesProcessing
+            // 
+            this.dataGridFilesProcessing.AllowUserToAddRows = false;
+            this.dataGridFilesProcessing.AllowUserToDeleteRows = false;
+            this.dataGridFilesProcessing.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridFilesProcessing.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridFilesProcessing.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Column3,
+            this.Column4,
+            this.Column5,
+            this.Column8,
+            this.Column6,
+            this.Column7});
+            this.dataGridFilesProcessing.Location = new System.Drawing.Point(12, 213);
+            this.dataGridFilesProcessing.Name = "dataGridFilesProcessing";
+            this.dataGridFilesProcessing.ReadOnly = true;
+            this.dataGridFilesProcessing.RowHeadersVisible = false;
+            this.dataGridFilesProcessing.Size = new System.Drawing.Size(645, 201);
+            this.dataGridFilesProcessing.TabIndex = 9;
+            // 
+            // Column3
+            // 
+            this.Column3.Frozen = true;
+            this.Column3.HeaderText = "Файл";
+            this.Column3.Name = "Column3";
+            this.Column3.ReadOnly = true;
+            this.Column3.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Column3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // Column4
+            // 
+            this.Column4.Frozen = true;
+            this.Column4.HeaderText = "Состояние";
+            this.Column4.Name = "Column4";
+            this.Column4.ReadOnly = true;
+            this.Column4.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Column4.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Column4.Width = 80;
+            // 
+            // Column5
+            // 
+            this.Column5.Frozen = true;
+            this.Column5.HeaderText = "Обработка";
+            this.Column5.Name = "Column5";
+            this.Column5.ReadOnly = true;
+            this.Column5.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Column5.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // Column8
+            // 
+            this.Column8.Frozen = true;
+            this.Column8.HeaderText = "Размер";
+            this.Column8.Name = "Column8";
+            this.Column8.ReadOnly = true;
+            this.Column8.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Column8.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // Column6
+            // 
+            this.Column6.Frozen = true;
+            this.Column6.HeaderText = "Скорость чтения";
+            this.Column6.Name = "Column6";
+            this.Column6.ReadOnly = true;
+            this.Column6.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Column6.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Column6.Width = 120;
+            // 
+            // Column7
+            // 
+            this.Column7.Frozen = true;
+            this.Column7.HeaderText = "Скорость обработки";
+            this.Column7.Name = "Column7";
+            this.Column7.ReadOnly = true;
+            this.Column7.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Column7.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Column7.Width = 150;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(669, 306);
+            this.ClientSize = new System.Drawing.Size(669, 439);
+            this.Controls.Add(this.dataGridFilesProcessing);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
             this.Controls.Add(this.dataGridStatistics);
@@ -366,6 +456,7 @@
             this.MainMenuStrip = this.menuStrip;
             this.Name = "MainForm";
             this.Text = "Курсач";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.chart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridStatistics)).EndInit();
@@ -373,6 +464,7 @@
             this.menuStrip.PerformLayout();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridFilesProcessing)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -411,6 +503,14 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.ToolStripMenuItem отображатьДополнительнуюИнформациюОПотокахToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem отображатьЛогToolStripMenuItem;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
+        private System.Windows.Forms.DataGridView dataGridFilesProcessing;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column8;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
     }
 }
 

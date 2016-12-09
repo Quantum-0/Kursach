@@ -84,7 +84,7 @@ namespace CharTrees
     
     public abstract class CharTree
     {
-        protected Node Root;
+        public Node Root;
         public ulong DifferentWords;
         public ulong ProcessedWords;
         public ulong ProcessedChars;
@@ -94,6 +94,8 @@ namespace CharTrees
         public CharTree()
         {
         }
+
+        public abstract void AppendTree(CharTree Tree);
 
         public abstract void CreateBranch(WordCountPair wcp);
 
@@ -163,6 +165,8 @@ namespace CharTrees
                     }
                 }
             }
+            if (Current.Count == 0)
+                DifferentWords++;
             Current.Count += wcp.Count;
         }
 
@@ -203,6 +207,34 @@ namespace CharTrees
             ProcessedChars += Convert.ToUInt64(Word.Length * 2);
 
             return true;
+        }
+
+        public override void AppendTree(CharTree Tree)
+        {
+            this.FilesProcessed += Tree.FilesProcessed;
+            this.ProcessedChars += Tree.ProcessedChars;
+            this.ProcessedWords += Tree.ProcessedWords;
+            this.ProcessingTime += Tree.ProcessingTime;
+            _Append(Tree.Root);
+        }
+
+        private void _Append(Node current, string Word = "")
+        {
+            dynamic Current;
+            if (current is SynchronousNode)
+                Current = current as SynchronousNode;
+
+            else
+                throw new ArgumentException();
+
+            foreach (var Child in Current.Childs)
+            {
+                if (Child.Count > 0)
+                    CreateBranch(new WordCountPair() { Word = Word + Child.Char, Count = Child.Count });
+
+                if (Child.Childs.Count > 0)
+                    _Append(Child, Word + Child.Char);
+            }
         }
     }
 
@@ -311,6 +343,11 @@ namespace CharTrees
             if (Current.Count == 0)
                 DifferentWords++;
             Current.Count++;
+        }
+
+        public override void AppendTree(CharTree Tree)
+        {
+            throw new NotImplementedException();
         }
     }
 

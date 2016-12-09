@@ -18,7 +18,8 @@ namespace GUI
                 CharTree tree = new SyncCharTree();
                 tree.ProcessedChars = ulong.Parse(sr.ReadLine());
                 tree.ProcessedWords = ulong.Parse(sr.ReadLine());
-                tree.DifferentWords = ulong.Parse(sr.ReadLine());
+                sr.ReadLine();
+                //tree.DifferentWords = ulong.Parse(sr.ReadLine());
                 tree.ProcessingTime = ulong.Parse(sr.ReadLine());
                 tree.FilesProcessed = ulong.Parse(sr.ReadLine());
                 sr.ReadLine(); sr.ReadLine();
