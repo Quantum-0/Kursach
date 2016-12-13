@@ -182,6 +182,19 @@ namespace GUI
                 dataGridFilesProcessing[5, i].Value = (ProcessingSpeeds[i] * 1000f) + " Слов/сек";
             }
         }
+        private void RefreshFilesStats(string[] ArticleTitles, int[] Lengths, ProcessingState[] states, int[] percents, float[] ReadingSpeeds, float[] ProcessingSpeeds)
+        {
+            dataGridFilesProcessing.RowCount = Lengths.Length;
+            for (int i = 0; i < ArticleTitles.Length; i++)
+            {
+                dataGridFilesProcessing[0, i].Value = ArticleTitles[i];
+                dataGridFilesProcessing[1, i].Value = states[i];
+                dataGridFilesProcessing[2, i].Value = percents[i] + "%";
+                dataGridFilesProcessing[3, i].Value = Lengths[i] / 1024f + " Кб";
+                dataGridFilesProcessing[4, i].Value = ReadingSpeeds[i] / 1024f * 1000 + " Кб/с";
+                dataGridFilesProcessing[5, i].Value = (ProcessingSpeeds[i] * 1000f) + " Слов/сек";
+            }
+        }
         private void RefreshChart()
         {
             this.Invoke((Action)(() =>
@@ -389,26 +402,89 @@ namespace GUI
             });
         }
 
-        private void обработатьТекстовыйФайлToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (openFileDialog.ShowDialog() != DialogResult.OK)
-                return;            
-
-            файлToolStripMenuItem.Enabled = false;
-            wikipediaToolStripMenuItem.Enabled = false;
-            прерватьВыполнениеToolStripMenuItem.Enabled = true;
-
-            Task.Run(() => ProcessSingleFile(openFileDialog.FileName));
-        }
         private void отображатьСтатистикуToolStripMenuItem_Click(object sender, EventArgs e)
         {
             dataGridStatistics.Visible = отображатьСтатистикуToolStripMenuItem.Checked;
+            splitContainer1.Panel1Collapsed = false;
+            RefreshControlsLocations();
         }
         private void отображатьГрафикToolStripMenuItem_Click(object sender, EventArgs e)
         {
             chart.Visible = отображатьГрафикToolStripMenuItem.Checked;
+            splitContainer1.Panel1Collapsed = false;
+            RefreshControlsLocations();
             RefreshChart();
         }
+        private void отображатьЛогToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            textBoxLog.Visible = отображатьЛогToolStripMenuItem.Checked;
+            splitContainer1.Panel2Collapsed = false;
+            RefreshControlsLocations();
+        }
+        private void отображатьПрогрессToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            dataGridFilesProcessing.Visible = отображатьПрогрессToolStripMenuItem.Checked;
+            splitContainer1.Panel2Collapsed = false;
+            RefreshControlsLocations();
+        }
+        private void RefreshControlsLocations()
+        {
+            // Top
+            if (chart.Visible)
+            {
+                if (dataGridStatistics.Visible)
+                {
+                    dataGridStatistics.Width = 271;
+                    chart.Left = 280;
+                    chart.Width = splitContainer1.Panel1.Right - chart.Location.X - 3;
+                }
+                else
+                {
+                    chart.Location = new Point(3, 3);
+                    chart.Size = new Size(splitContainer1.Panel1.Right - 6, splitContainer1.Panel1.Bottom - 6);
+                }
+            }
+            else
+            {
+                if (dataGridStatistics.Visible)
+                {
+                    dataGridStatistics.Size = new Size(splitContainer1.Panel1.Right - 6, splitContainer1.Panel1.Bottom - 6);
+                }
+                else
+                {
+                    splitContainer1.Panel1Collapsed = true;
+                }
+            }
+            // Bottom
+            if (dataGridFilesProcessing.Visible)
+            {
+                if (textBoxLog.Visible)
+                {
+                    textBoxLog.Height = 65;
+                    textBoxLog.Top = splitContainer1.Panel2.Bottom - splitContainer1.Panel2.Top - 65 - 3;
+                    dataGridFilesProcessing.Top = 3;
+                    dataGridFilesProcessing.Height = textBoxLog.Top - dataGridFilesProcessing.Top - 6;
+                }
+                else
+                {
+                    dataGridFilesProcessing.Top = 3;
+                    dataGridFilesProcessing.Height = splitContainer1.Panel2.Height - 6;
+                }
+            }
+            else
+            {
+                if (textBoxLog.Visible)
+                {
+                    textBoxLog.Top = 3;
+                    textBoxLog.Height = splitContainer1.Panel2.Height - 6;
+                }
+                else
+                {
+                    splitContainer1.Panel2Collapsed = true;
+                }
+            }
+        }
+
         private void прерватьВыполнениеToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AbortCalculating = true;
@@ -425,6 +501,28 @@ namespace GUI
 
             Task.Run(() => ProcessFolder(folderBrowserDialog.SelectedPath));
         }
+        private void обработатьТекстовыйФайлToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            файлToolStripMenuItem.Enabled = false;
+            wikipediaToolStripMenuItem.Enabled = false;
+            прерватьВыполнениеToolStripMenuItem.Enabled = true;
+
+            Task.Run(() => ProcessSingleFile(openFileDialog.FileName));
+        }
+        private void обработатьСлучайнуюСтатьюToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ProcessRandomPage();
+        }
+        private void запуститьОбработкуToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < 250; i++)
+            {
+                ProcessRandomPage();
+            }
+        }
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (ProcessingFiles > 0)
@@ -432,189 +530,16 @@ namespace GUI
                 e.Cancel = true;
                 return;
             }
-
-
         }
 
         private void ProcessSingleFile(string fname)
         {
             StartProcessing(new FileInfo[] { new FileInfo(fname) });
-            //FileChanged = true;
-            //var FI = new FileInfo(fname);
-            //var sw = new Stopwatch();
-            //var Word = new StringBuilder();
-            //var WordsFound = 0;
-            //var Percents = 0;
-            //var shortfname = Path.GetFileName(fname);
-            //UpdateStatusStrip(0, "Обработка файла: " + shortfname);
-            //long lastswvalue = 0;
-            //long lastiterationsvalue = 0;
-            //long lastwordsvalue = 0;
-            //long iteration = 0;
-            /*using (StreamReader sr = new StreamReader(fname))
-            {
-                ProcessingFiles++;
-                sw.Start();
-                do
-                {
-                    var c = Convert.ToChar(sr.Read());
-                    iteration++;
-
-                    if (sr.BaseStream.Position > sr.BaseStream.Length * (Percents + 5) / 100)
-                    {
-                        Percents += 5;
-                        UpdateStatusStrip(Percents, "Обработка файла: " + shortfname + " [" + Percents + "%]");
-                        ReadingSpeed = (float)(iteration - lastiterationsvalue) / (sw.ElapsedMilliseconds - lastswvalue);
-                        ProcessingSpeed = (float)(WordsFound - lastwordsvalue) / (sw.ElapsedMilliseconds - lastswvalue);
-                        ProcessingTime = sw.ElapsedMilliseconds;
-                        lastswvalue = sw.ElapsedMilliseconds;
-                        lastiterationsvalue = iteration;
-                        lastwordsvalue = WordsFound;
-                        this.Invoke((Action)(() => RefreshStatistics()));
-                    }
-
-                    if (char.IsLetter(c))
-                    {
-                        Word.Append(char.ToUpper(c));
-                    }
-                    else if (Word.Length != 0)
-                    {
-                        WordsFound++;
-                        while (true)
-                        {
-                            if (MainTree.AddWord(Word.ToString()))
-                                break;
-
-                            Thread.Yield();
-                        }
-                        Word.Clear();
-                    }
-                }
-                while (!sr.EndOfStream && !AbortCalculating);
-                sw.Stop();
-                ReadingSpeed = 0;
-                ProcessingSpeed = 0;
-                MainTree.ProcessingTime += Convert.ToUInt64(sw.ElapsedMilliseconds);
-                ProcessingTime = 0;
-            }
-            UpdateCaption();
-            ProcessingFiles--;
-            MainTree.FilesProcessed++;
-            if (AbortCalculating && ProcessingFiles == 0)
-            {
-                UpdateStatusStrip(100, "Обработка прервана");
-                AbortCalculating = false;
-            }
-            else
-                UpdateStatusStrip(100, String.Format("Обработка файла \"{0}\" выполнена", Path.GetFileName(fname)));
-
-            this.Invoke((Action)(() =>
-            {
-                файлToolStripMenuItem.Enabled = true;
-                wikipediaToolStripMenuItem.Enabled = true;
-                прерватьВыполнениеToolStripMenuItem.Enabled = false;
-                RefreshChart();
-            }));
-
-            RefreshStatistics();
-            GC.Collect(1);*/
         }
         private void ProcessFolder(string dname)
         {
-            //FileChanged = true;
-            //UpdateCaption();
             var DI = new DirectoryInfo(dname);
             StartProcessing(DI.EnumerateFiles("*.txt").ToArray());
-            //var FIs = DI.EnumerateFiles("*.txt").ToArray();
-            //var sw = new Stopwatch();
-            //var Percents = new int[FIs.Length];
-            //var TotalSize = FIs.Sum(fi => fi.Length);
-            //var ShortFNames = FIs.Select(fi => fi.Name).ToArray();
-            //UpdateStatusStrip(0, string.Format("Обработка {0} файлов ({1} Мб) из директории: {2}",
-            //FIs.Length, (TotalSize / 1048576f).ToString("F1"), dname));
-
-            //var ReadingSpeed = new float[FIs.Length];
-            //var ProcessingSpeed = new float[FIs.Length];
-
-
-            //sw.Start();
-            //Parallel.For(0, FIs.Length, (i) =>
-            /*{
-                long iteration = 0;
-                long lastiterationsvalue = 0;
-                long lastswvalue = 0;
-                int lastwordsvalue = 0;
-                var LocalTree = new SyncCharTree();
-                var Word = new StringBuilder();
-                int WordsFound = 0;
-                ProcessingFiles++;
-                using (StreamReader sr = new StreamReader(FIs[i].FullName))
-                {
-                    do
-                    {
-                        var c = Convert.ToChar(sr.Read());
-                        iteration++;
-
-                        if (sr.BaseStream.Position > sr.BaseStream.Length * (Percents[i] + 5) / 100)
-                        {
-                            Percents[i] += 5;
-                            UpdateStatusStrip(Percents.Sum() / FIs.Length);
-                            ReadingSpeed[i] = (float)(iteration - lastiterationsvalue) / (sw.ElapsedMilliseconds - lastswvalue);
-                            ProcessingSpeed[i] = (float)(WordsFound - lastwordsvalue) / (sw.ElapsedMilliseconds - lastswvalue);
-                            ProcessingTime = sw.ElapsedMilliseconds;
-                            lastswvalue = sw.ElapsedMilliseconds;
-                            lastiterationsvalue = iteration;
-                            lastwordsvalue = WordsFound;
-                            this.ReadingSpeed = ReadingSpeed.Sum();
-                            this.ProcessingSpeed = ProcessingSpeed.Sum();
-                            this.Invoke((Action)(() => RefreshStatistics()));
-                        }
-
-                        if (char.IsLetter(c))
-                        {
-                            Word.Append(char.ToUpper(c));
-                        }
-                        else if (Word.Length != 0)
-                        {
-                            //WordsFound++;
-                            while (true)
-                            {
-                                if (LocalTree.AddWord(Word.ToString()))
-                                    break;
-
-                                Thread.Yield();
-                            }
-                            Word.Clear();
-                        }
-                    }
-                    while (!sr.EndOfStream && !AbortCalculating);
-                    MainTree.AppendTree(LocalTree);
-                    ProcessingFiles--;
-                    MainTree.FilesProcessed++;
-                }
-            });
-            sw.Stop();
-            MainTree.ProcessingTime += Convert.ToUInt64(sw.ElapsedMilliseconds);*/
-            /*ProcessingTime = 0;
-
-            if (AbortCalculating && ProcessingFiles == 0)
-            {
-                UpdateStatusStrip(100, "Обработка прервана");
-                AbortCalculating = false;
-            }
-            else
-                UpdateStatusStrip(100, String.Format("Обработка файлов в  \"{0}\" выполнена", dname));*/
-
-            //this.Invoke((Action)(() =>
-            //{
-            //    файлToolStripMenuItem.Enabled = true;
-            //    wikipediaToolStripMenuItem.Enabled = true;
-            //    прерватьВыполнениеToolStripMenuItem.Enabled = false;
-            //    RefreshChart();
-            //}));
-
-            //RefreshStatistics();
-            //GC.Collect(1);
         }
         private void StartProcessing(FileInfo[] Files)
         {
@@ -758,7 +683,7 @@ namespace GUI
                     UpdateStatusStrip(100, String.Format("Обработка {0} файлов выполнена", Files.Length));
             }
             
-            // Обновление интерфейса и чистка мусора
+            // Обновление интерфейса
             this.Invoke((Action)(() =>
             {
                 файлToolStripMenuItem.Enabled = true;
@@ -769,6 +694,7 @@ namespace GUI
             RefreshStatistics();
             RefreshFilesStats(Files, States, Percents, ReadingSpeed, ProcessingSpeed);
 
+            // Чистка мусора
             CommonSW = null;
             LocalSW = null;
             ShortFNames = null;
@@ -784,25 +710,98 @@ namespace GUI
             NotStarted,
             Processing,
             Merging,
-            Finished
+            Finished,
+            Downloading
         }
         private void ProcessRandomPage()
         {
-            var t = WikiGetRandomText();
-            UpdateStatusStrip(0, "Обработка содержимого статьи \"" + t.Item1 + "\"");
-            StringBuilder Word = new StringBuilder();
+            // Инициализация процесса обработки
+            FileChanged = true;
+            ProcessingFiles++;
+            UpdateCaption();
+            UpdateStatusStrip(0, "Загрузка случайной статьи");
+            var ReadingSpeed = new float[1];
+            var ProcessingSpeed = new float[1];
+            var States = new ProcessingState[1];
+            States[0] = ProcessingState.Downloading;
+            StringReader Stream;
+            var Percents = new int[1];
+            var CommonSW = new Stopwatch();
+            RefreshFilesStats(new string[] { "???" }, new int[] { 0 }, States, Percents, ReadingSpeed, ProcessingSpeed);
+            Refresh();
+
+            // Получение текста
+            var ArticleTask = WikiGetRandomText();
+
             
-            for (int i = 0; i < t.Item2.Length; i++)
+
+
+
+            // Начало обработки
+            var Article = /*await*/ ArticleTask;
+            if (Article == null)
+                throw new Exception("Не скачалось :с");
+            var TotalSize = Article.Item2.Length;
+            States[0] = ProcessingState.Processing;
+            RefreshFilesStats(new string[] { Article.Item1 }, new int[] { TotalSize }, States, Percents, ReadingSpeed, ProcessingSpeed);
+            Stream = new StringReader(Article.Item2);
+            UpdateStatusStrip(0, "Обработка содержимого статьи \"" + Article.Item1 + "\"");
+            CommonSW.Start();
+            Refresh();
+
+            // Инициализация
+            long iteration = 0;
+            long lastiterationsvalue = 0;
+            long lastswvalue = 0;
+            int lastwordsvalue = 0;
+            //var LocalTree = Files.Length == 1 ? MainTree : new SyncCharTree();
+            var LocalTree = MainTree;
+            var Word = new StringBuilder();
+            int WordsFound = 0;
+
+            while (iteration < Article.Item2.Length && !AbortCalculating)
             {
-                if (char.IsLetter(t.Item2[i]))
+                // Считывание символа
+                var c = Convert.ToChar(Stream.Read());
+                iteration++;
+
+                // Обновление визуализации данных
+                if (iteration > Article.Item2.Length * (Percents[0] + 5) / 100)
                 {
-                    Word.Append(char.ToUpper(t.Item2[i]));
+                    // Обновление локальных данных
+                    Percents[0] += 5;
+                    ReadingSpeed[0] = (float)(iteration - lastiterationsvalue) / (CommonSW.ElapsedMilliseconds - lastswvalue);
+                    ProcessingSpeed[0] = (float)(WordsFound - lastwordsvalue) / (CommonSW.ElapsedMilliseconds - lastswvalue);
+                    lastswvalue = CommonSW.ElapsedMilliseconds;
+                    lastiterationsvalue = iteration;
+                    lastwordsvalue = WordsFound;
+
+                    // Обновление глобальных данных
+                    this.LTProcessedChars = LocalTree.ProcessedChars;
+                    this.LTProcessedWords += LocalTree.ProcessedWords;
+
+                    this.ReadingSpeed = ReadingSpeed.Sum();
+                    this.ProcessingSpeed = ProcessingSpeed.Sum();
+                    this.ProcessingTime = CommonSW.ElapsedMilliseconds;
+                    UpdateStatusStrip(Percents.Sum() / 1);
+                    this.Invoke((Action)(() =>
+                    {
+                        RefreshStatistics();
+                        RefreshFilesStats(new string[] { Article.Item1 }, new int[] { TotalSize }, States, Percents, ReadingSpeed, ProcessingSpeed);
+                    }));
+                }
+
+                // Обработка считанных данных
+                if (char.IsLetter(c))
+                {
+                    Word.Append(char.ToUpper(c));
                 }
                 else if (Word.Length != 0)
                 {
+                    WordsFound++;
                     while (true)
                     {
-                        if (MainTree.AddWord(Word.ToString()))
+                        if (LocalTree.AddWord(Word.ToString()))
                             break;
 
                         Thread.Sleep(0);
@@ -810,37 +809,89 @@ namespace GUI
                     Word.Clear();
                 }
             }
+            Percents[0] = 100;
+            ReadingSpeed[0] = 0;
+            ProcessingSpeed[0] = 0;
 
-            UpdateStatusStrip(100, "Обработка статьи \"" + t.Item1 + "\" выполнена");
-            RefreshStatistics();
-            RefreshChart();
-        }
+            // Окончание обработки, объединение с основным деревом
+            States[0] = ProcessingState.Merging;
+            //if (Files.Length != 1)
+              //  MainTree.AppendTree(LocalTree);
+            ProcessingFiles--;
+            MainTree.FilesProcessed++;
+            States[0] = ProcessingState.Finished;
+            this.ReadingSpeed = 0;
+            this.ProcessingSpeed = 0;
+            LTProcessedChars = 0;
+            LTProcessedWords = 0;
+            CommonSW.Stop();
+            ProcessingTime = 0;
+            MainTree.ProcessingTime += Convert.ToUInt64(CommonSW.ElapsedMilliseconds);
 
-        private void обработатьСлучайнуюСтатьюToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            for (int i = 0; i < 5; i++)
+            // Вывод статуса внизу
+            if (AbortCalculating)
             {
-                ProcessRandomPage();
+                UpdateStatusStrip(100, "Обработка прервана");
+                AbortCalculating = false;
             }
+            else
+            {
+                UpdateStatusStrip(100, "Обработка статьи завершена");
+            }
+
+            // Обновление интерфейса
+            this.Invoke((Action)(() =>
+            {
+                файлToolStripMenuItem.Enabled = true;
+                wikipediaToolStripMenuItem.Enabled = true;
+                прерватьВыполнениеToolStripMenuItem.Enabled = false;
+                RefreshChart();
+            }));
+            RefreshStatistics();
+            RefreshFilesStats(new string[] { Article.Item1 }, new int[] { TotalSize }, States, Percents, ReadingSpeed, ProcessingSpeed);
+
+            // Чистка мусора
+            CommonSW = null;
+            Percents = null;
+            ReadingSpeed = null;
+            ProcessingSpeed = null;
+            States = null;
+            Stream = null;
+            GC.Collect(1);
         }
+
 
         WebClient webClient = new WebClient();
         private Tuple<string,string> WikiGetRandomText()
         {
-            try
+            var t = Task<Tuple<string, string>>.Run(() =>
             {
-                var d = webClient.DownloadString("https://ru.wikipedia.org/w/api.php?action=query&grnnamespace=0&generator=random&rnlimit=5&format=json");
-                var ee = (Newtonsoft.Json.Linq.JObject)Newtonsoft.Json.JsonConvert.DeserializeObject(d);
-                var f = ee.Last.Last.Last.Last.Last.Last.Last.Last.ToString();
-                var content = webClient.DownloadString(@"https://ru.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&explaintext=1&titles=" + f);
-                var a = Newtonsoft.Json.JsonConvert.DeserializeObject(content);
-                var b = (Newtonsoft.Json.Linq.JObject)a;
-                return Tuple.Create(f, b.Children().Last().Last().Last().Last().Last().Last().Last().Last().ToString());
-            }
-            catch
-            {
-                return null;
-            }
+                try
+                {
+                    var d = webClient.DownloadString("https://ru.wikipedia.org/w/api.php?action=query&grnnamespace=0&generator=random&rnlimit=5&format=json");
+                    var ee = (Newtonsoft.Json.Linq.JObject)Newtonsoft.Json.JsonConvert.DeserializeObject(d);
+                    var f = ee.Last.Last.Last.Last.Last.Last.Last.Last.ToString();
+                    var content = webClient.DownloadString(@"https://ru.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&explaintext=1&titles=" + f);
+                    var a = Newtonsoft.Json.JsonConvert.DeserializeObject(content);
+                    var b = (Newtonsoft.Json.Linq.JObject)a;
+                    return Tuple.Create(f, b.Children().Last().Last().Last().Last().Last().Last().Last().Last().ToString());
+                }
+                catch
+                {
+                    return null;
+                }
+            });
+            //return await t;
+            return t.Result;
         }
+
+        
+
+        private void dataGridFilesProcessing_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        
     }
 }

@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series11 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series12 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.dataGridStatistics = new System.Windows.Forms.DataGridView();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -54,7 +54,6 @@
             this.отображатьГрафикToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.отображатьПрогрессToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.отображатьСтатистикуToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.отображатьДополнительнуюИнформациюОПотокахToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.отображатьЛогToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openDictDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveDictDialog = new System.Windows.Forms.SaveFileDialog();
@@ -70,11 +69,17 @@
             this.Column8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.textBoxLog = new System.Windows.Forms.TextBox();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridStatistics)).BeginInit();
             this.menuStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridFilesProcessing)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
             // chart
@@ -86,37 +91,37 @@
             this.chart.BackHatchStyle = System.Windows.Forms.DataVisualization.Charting.ChartHatchStyle.LightUpwardDiagonal;
             this.chart.BorderlineColor = System.Drawing.Color.Black;
             this.chart.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
-            chartArea1.Area3DStyle.Inclination = 10;
-            chartArea1.Area3DStyle.IsRightAngleAxes = false;
-            chartArea1.Area3DStyle.LightStyle = System.Windows.Forms.DataVisualization.Charting.LightStyle.Realistic;
-            chartArea1.Area3DStyle.Perspective = 1;
-            chartArea1.Area3DStyle.Rotation = 8;
-            chartArea1.Area3DStyle.WallWidth = 3;
-            chartArea1.Name = "ChartArea1";
-            this.chart.ChartAreas.Add(chartArea1);
-            this.chart.Location = new System.Drawing.Point(293, 27);
+            chartArea6.Area3DStyle.Inclination = 10;
+            chartArea6.Area3DStyle.IsRightAngleAxes = false;
+            chartArea6.Area3DStyle.LightStyle = System.Windows.Forms.DataVisualization.Charting.LightStyle.Realistic;
+            chartArea6.Area3DStyle.Perspective = 1;
+            chartArea6.Area3DStyle.Rotation = 8;
+            chartArea6.Area3DStyle.WallWidth = 3;
+            chartArea6.Name = "ChartArea1";
+            this.chart.ChartAreas.Add(chartArea6);
+            this.chart.Location = new System.Drawing.Point(280, 3);
             this.chart.Name = "chart";
             this.chart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
             this.chart.PaletteCustomColors = new System.Drawing.Color[] {
         System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))))};
-            series1.BorderColor = System.Drawing.Color.Black;
-            series1.BorderWidth = 2;
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
-            series1.Legend = "Legend1";
-            series1.Name = "SeriesValues";
-            series1.ShadowColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            series1.ShadowOffset = 4;
-            series2.BorderColor = System.Drawing.Color.Lime;
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
-            series2.Name = "SeriesIdeal";
-            series2.ShadowColor = System.Drawing.Color.Gainsboro;
-            series2.ShadowOffset = 4;
-            series2.YValuesPerPoint = 4;
-            this.chart.Series.Add(series1);
-            this.chart.Series.Add(series2);
-            this.chart.Size = new System.Drawing.Size(364, 180);
+            series11.BorderColor = System.Drawing.Color.Black;
+            series11.BorderWidth = 2;
+            series11.ChartArea = "ChartArea1";
+            series11.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
+            series11.Legend = "Legend1";
+            series11.Name = "SeriesValues";
+            series11.ShadowColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            series11.ShadowOffset = 4;
+            series12.BorderColor = System.Drawing.Color.Lime;
+            series12.ChartArea = "ChartArea1";
+            series12.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
+            series12.Name = "SeriesIdeal";
+            series12.ShadowColor = System.Drawing.Color.Gainsboro;
+            series12.ShadowOffset = 4;
+            series12.YValuesPerPoint = 4;
+            this.chart.Series.Add(series11);
+            this.chart.Series.Add(series12);
+            this.chart.Size = new System.Drawing.Size(360, 110);
             this.chart.TabIndex = 0;
             this.chart.Text = "chart1";
             this.chart.Visible = false;
@@ -132,14 +137,14 @@
             this.Column1,
             this.Column2});
             this.dataGridStatistics.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.dataGridStatistics.Location = new System.Drawing.Point(12, 27);
+            this.dataGridStatistics.Location = new System.Drawing.Point(3, 3);
             this.dataGridStatistics.MultiSelect = false;
             this.dataGridStatistics.Name = "dataGridStatistics";
             this.dataGridStatistics.ReadOnly = true;
             this.dataGridStatistics.RowHeadersVisible = false;
             this.dataGridStatistics.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dataGridStatistics.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.dataGridStatistics.Size = new System.Drawing.Size(275, 180);
+            this.dataGridStatistics.Size = new System.Drawing.Size(271, 110);
             this.dataGridStatistics.TabIndex = 2;
             // 
             // Column1
@@ -166,7 +171,7 @@
             this.видToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(669, 24);
+            this.menuStrip.Size = new System.Drawing.Size(643, 24);
             this.menuStrip.TabIndex = 6;
             this.menuStrip.Text = "menuStrip";
             // 
@@ -270,6 +275,7 @@
             this.запуститьОбработкуToolStripMenuItem.Name = "запуститьОбработкуToolStripMenuItem";
             this.запуститьОбработкуToolStripMenuItem.Size = new System.Drawing.Size(358, 22);
             this.запуститьОбработкуToolStripMenuItem.Text = "Запустить/остановить обработку случайных статей";
+            this.запуститьОбработкуToolStripMenuItem.Click += new System.EventHandler(this.запуститьОбработкуToolStripMenuItem_Click);
             // 
             // прерватьВыполнениеToolStripMenuItem
             // 
@@ -285,7 +291,6 @@
             this.отображатьГрафикToolStripMenuItem,
             this.отображатьПрогрессToolStripMenuItem,
             this.отображатьСтатистикуToolStripMenuItem,
-            this.отображатьДополнительнуюИнформациюОПотокахToolStripMenuItem,
             this.отображатьЛогToolStripMenuItem});
             this.видToolStripMenuItem.Name = "видToolStripMenuItem";
             this.видToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
@@ -293,9 +298,11 @@
             // 
             // отображатьГрафикToolStripMenuItem
             // 
+            this.отображатьГрафикToolStripMenuItem.Checked = true;
             this.отображатьГрафикToolStripMenuItem.CheckOnClick = true;
+            this.отображатьГрафикToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.отображатьГрафикToolStripMenuItem.Name = "отображатьГрафикToolStripMenuItem";
-            this.отображатьГрафикToolStripMenuItem.Size = new System.Drawing.Size(374, 22);
+            this.отображатьГрафикToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
             this.отображатьГрафикToolStripMenuItem.Text = "Отображать график";
             this.отображатьГрафикToolStripMenuItem.Click += new System.EventHandler(this.отображатьГрафикToolStripMenuItem_Click);
             // 
@@ -305,8 +312,9 @@
             this.отображатьПрогрессToolStripMenuItem.CheckOnClick = true;
             this.отображатьПрогрессToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.отображатьПрогрессToolStripMenuItem.Name = "отображатьПрогрессToolStripMenuItem";
-            this.отображатьПрогрессToolStripMenuItem.Size = new System.Drawing.Size(374, 22);
-            this.отображатьПрогрессToolStripMenuItem.Text = "Отображать прогресс";
+            this.отображатьПрогрессToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.отображатьПрогрессToolStripMenuItem.Text = "Отображать прогресс файлов";
+            this.отображатьПрогрессToolStripMenuItem.Click += new System.EventHandler(this.отображатьПрогрессToolStripMenuItem_Click);
             // 
             // отображатьСтатистикуToolStripMenuItem
             // 
@@ -314,21 +322,19 @@
             this.отображатьСтатистикуToolStripMenuItem.CheckOnClick = true;
             this.отображатьСтатистикуToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.отображатьСтатистикуToolStripMenuItem.Name = "отображатьСтатистикуToolStripMenuItem";
-            this.отображатьСтатистикуToolStripMenuItem.Size = new System.Drawing.Size(374, 22);
+            this.отображатьСтатистикуToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
             this.отображатьСтатистикуToolStripMenuItem.Text = "Отображать статистику";
             this.отображатьСтатистикуToolStripMenuItem.Click += new System.EventHandler(this.отображатьСтатистикуToolStripMenuItem_Click);
             // 
-            // отображатьДополнительнуюИнформациюОПотокахToolStripMenuItem
-            // 
-            this.отображатьДополнительнуюИнформациюОПотокахToolStripMenuItem.Name = "отображатьДополнительнуюИнформациюОПотокахToolStripMenuItem";
-            this.отображатьДополнительнуюИнформациюОПотокахToolStripMenuItem.Size = new System.Drawing.Size(374, 22);
-            this.отображатьДополнительнуюИнформациюОПотокахToolStripMenuItem.Text = "Отображать дополнительную информацию о потоках";
-            // 
             // отображатьЛогToolStripMenuItem
             // 
+            this.отображатьЛогToolStripMenuItem.Checked = true;
+            this.отображатьЛогToolStripMenuItem.CheckOnClick = true;
+            this.отображатьЛогToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.отображатьЛогToolStripMenuItem.Name = "отображатьЛогToolStripMenuItem";
-            this.отображатьЛогToolStripMenuItem.Size = new System.Drawing.Size(374, 22);
+            this.отображатьЛогToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
             this.отображатьЛогToolStripMenuItem.Text = "Отображать лог";
+            this.отображатьЛогToolStripMenuItem.Click += new System.EventHandler(this.отображатьЛогToolStripMenuItem_Click);
             // 
             // openDictDialog
             // 
@@ -343,9 +349,9 @@
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripProgressBar1,
             this.toolStripStatusLabel1});
-            this.statusStrip.Location = new System.Drawing.Point(0, 417);
+            this.statusStrip.Location = new System.Drawing.Point(0, 297);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(669, 22);
+            this.statusStrip.Size = new System.Drawing.Size(643, 22);
             this.statusStrip.TabIndex = 8;
             this.statusStrip.Text = "statusStrip1";
             // 
@@ -369,7 +375,8 @@
             // 
             this.dataGridFilesProcessing.AllowUserToAddRows = false;
             this.dataGridFilesProcessing.AllowUserToDeleteRows = false;
-            this.dataGridFilesProcessing.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.dataGridFilesProcessing.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridFilesProcessing.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridFilesProcessing.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -379,12 +386,13 @@
             this.Column8,
             this.Column6,
             this.Column7});
-            this.dataGridFilesProcessing.Location = new System.Drawing.Point(12, 213);
+            this.dataGridFilesProcessing.Location = new System.Drawing.Point(3, 3);
             this.dataGridFilesProcessing.Name = "dataGridFilesProcessing";
             this.dataGridFilesProcessing.ReadOnly = true;
             this.dataGridFilesProcessing.RowHeadersVisible = false;
-            this.dataGridFilesProcessing.Size = new System.Drawing.Size(645, 201);
+            this.dataGridFilesProcessing.Size = new System.Drawing.Size(637, 76);
             this.dataGridFilesProcessing.TabIndex = 9;
+            this.dataGridFilesProcessing.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridFilesProcessing_CellContentClick);
             // 
             // Column3
             // 
@@ -443,16 +451,44 @@
             this.Column7.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.Column7.Width = 150;
             // 
+            // textBoxLog
+            // 
+            this.textBoxLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxLog.Location = new System.Drawing.Point(3, 85);
+            this.textBoxLog.Multiline = true;
+            this.textBoxLog.Name = "textBoxLog";
+            this.textBoxLog.Size = new System.Drawing.Size(637, 65);
+            this.textBoxLog.TabIndex = 10;
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 24);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.dataGridStatistics);
+            this.splitContainer1.Panel1.Controls.Add(this.chart);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.dataGridFilesProcessing);
+            this.splitContainer1.Panel2.Controls.Add(this.textBoxLog);
+            this.splitContainer1.Size = new System.Drawing.Size(643, 273);
+            this.splitContainer1.SplitterDistance = 116;
+            this.splitContainer1.TabIndex = 11;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(669, 439);
-            this.Controls.Add(this.dataGridFilesProcessing);
+            this.ClientSize = new System.Drawing.Size(643, 319);
+            this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
-            this.Controls.Add(this.dataGridStatistics);
-            this.Controls.Add(this.chart);
             this.MainMenuStrip = this.menuStrip;
             this.Name = "MainForm";
             this.Text = "Курсач";
@@ -465,6 +501,11 @@
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridFilesProcessing)).EndInit();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -501,7 +542,6 @@
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
         private System.Windows.Forms.ToolStripMenuItem прерватьВыполнениеToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
-        private System.Windows.Forms.ToolStripMenuItem отображатьДополнительнуюИнформациюОПотокахToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem отображатьЛогToolStripMenuItem;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
         private System.Windows.Forms.DataGridView dataGridFilesProcessing;
@@ -511,6 +551,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column8;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
+        private System.Windows.Forms.TextBox textBoxLog;
+        private System.Windows.Forms.SplitContainer splitContainer1;
     }
 }
 
