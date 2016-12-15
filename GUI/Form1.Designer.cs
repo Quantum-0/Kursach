@@ -28,13 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series11 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series12 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.dataGridStatistics = new System.Windows.Forms.DataGridView();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.словарьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.закрытьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -63,14 +61,17 @@
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.dataGridFilesProcessing = new System.Windows.Forms.DataGridView();
+            this.textBoxLog = new System.Windows.Forms.TextBox();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.textBoxWords = new System.Windows.Forms.TextBox();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.textBoxLog = new System.Windows.Forms.TextBox();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridStatistics)).BeginInit();
             this.menuStrip.SuspendLayout();
@@ -91,40 +92,38 @@
             this.chart.BackHatchStyle = System.Windows.Forms.DataVisualization.Charting.ChartHatchStyle.LightUpwardDiagonal;
             this.chart.BorderlineColor = System.Drawing.Color.Black;
             this.chart.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
-            chartArea6.Area3DStyle.Inclination = 10;
-            chartArea6.Area3DStyle.IsRightAngleAxes = false;
-            chartArea6.Area3DStyle.LightStyle = System.Windows.Forms.DataVisualization.Charting.LightStyle.Realistic;
-            chartArea6.Area3DStyle.Perspective = 1;
-            chartArea6.Area3DStyle.Rotation = 8;
-            chartArea6.Area3DStyle.WallWidth = 3;
-            chartArea6.Name = "ChartArea1";
-            this.chart.ChartAreas.Add(chartArea6);
+            chartArea1.Area3DStyle.Inclination = 10;
+            chartArea1.Area3DStyle.IsRightAngleAxes = false;
+            chartArea1.Area3DStyle.LightStyle = System.Windows.Forms.DataVisualization.Charting.LightStyle.Realistic;
+            chartArea1.Area3DStyle.Perspective = 1;
+            chartArea1.Area3DStyle.Rotation = 8;
+            chartArea1.Area3DStyle.WallWidth = 3;
+            chartArea1.Name = "ChartArea1";
+            this.chart.ChartAreas.Add(chartArea1);
             this.chart.Location = new System.Drawing.Point(280, 3);
             this.chart.Name = "chart";
             this.chart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
             this.chart.PaletteCustomColors = new System.Drawing.Color[] {
         System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))))};
-            series11.BorderColor = System.Drawing.Color.Black;
-            series11.BorderWidth = 2;
-            series11.ChartArea = "ChartArea1";
-            series11.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
-            series11.Legend = "Legend1";
-            series11.Name = "SeriesValues";
-            series11.ShadowColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            series11.ShadowOffset = 4;
-            series12.BorderColor = System.Drawing.Color.Lime;
-            series12.ChartArea = "ChartArea1";
-            series12.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
-            series12.Name = "SeriesIdeal";
-            series12.ShadowColor = System.Drawing.Color.Gainsboro;
-            series12.ShadowOffset = 4;
-            series12.YValuesPerPoint = 4;
-            this.chart.Series.Add(series11);
-            this.chart.Series.Add(series12);
-            this.chart.Size = new System.Drawing.Size(360, 110);
+            series1.BorderColor = System.Drawing.Color.Black;
+            series1.BorderWidth = 2;
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "SeriesValues";
+            series1.ShadowColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            series1.ShadowOffset = 4;
+            series2.BorderColor = System.Drawing.Color.Lime;
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
+            series2.Name = "SeriesIdeal";
+            series2.ShadowColor = System.Drawing.Color.Gainsboro;
+            series2.ShadowOffset = 4;
+            series2.YValuesPerPoint = 4;
+            this.chart.Series.Add(series1);
+            this.chart.Series.Add(series2);
+            this.chart.Size = new System.Drawing.Size(400, 122);
             this.chart.TabIndex = 0;
             this.chart.Text = "chart1";
-            this.chart.Visible = false;
             // 
             // dataGridStatistics
             // 
@@ -144,24 +143,8 @@
             this.dataGridStatistics.RowHeadersVisible = false;
             this.dataGridStatistics.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dataGridStatistics.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.dataGridStatistics.Size = new System.Drawing.Size(271, 110);
+            this.dataGridStatistics.Size = new System.Drawing.Size(271, 122);
             this.dataGridStatistics.TabIndex = 2;
-            // 
-            // Column1
-            // 
-            this.Column1.Frozen = true;
-            this.Column1.HeaderText = "Параметр";
-            this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
-            this.Column1.Width = 120;
-            // 
-            // Column2
-            // 
-            this.Column2.Frozen = true;
-            this.Column2.HeaderText = "Значение";
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
-            this.Column2.Width = 150;
             // 
             // menuStrip
             // 
@@ -171,7 +154,7 @@
             this.видToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(643, 24);
+            this.menuStrip.Size = new System.Drawing.Size(683, 24);
             this.menuStrip.TabIndex = 6;
             this.menuStrip.Text = "menuStrip";
             // 
@@ -220,6 +203,7 @@
             this.добавитьКТекущемуToolStripMenuItem.Name = "добавитьКТекущемуToolStripMenuItem";
             this.добавитьКТекущемуToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.добавитьКТекущемуToolStripMenuItem.Text = "Добавить к текущему";
+            this.добавитьКТекущемуToolStripMenuItem.Click += new System.EventHandler(this.AppendFile_Click);
             // 
             // данныеToolStripMenuItem
             // 
@@ -266,15 +250,15 @@
             // обработатьСлучайнуюСтатьюToolStripMenuItem
             // 
             this.обработатьСлучайнуюСтатьюToolStripMenuItem.Name = "обработатьСлучайнуюСтатьюToolStripMenuItem";
-            this.обработатьСлучайнуюСтатьюToolStripMenuItem.Size = new System.Drawing.Size(358, 22);
+            this.обработатьСлучайнуюСтатьюToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
             this.обработатьСлучайнуюСтатьюToolStripMenuItem.Text = "Обработать случайную статью";
             this.обработатьСлучайнуюСтатьюToolStripMenuItem.Click += new System.EventHandler(this.обработатьСлучайнуюСтатьюToolStripMenuItem_Click);
             // 
             // запуститьОбработкуToolStripMenuItem
             // 
             this.запуститьОбработкуToolStripMenuItem.Name = "запуститьОбработкуToolStripMenuItem";
-            this.запуститьОбработкуToolStripMenuItem.Size = new System.Drawing.Size(358, 22);
-            this.запуститьОбработкуToolStripMenuItem.Text = "Запустить/остановить обработку случайных статей";
+            this.запуститьОбработкуToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
+            this.запуститьОбработкуToolStripMenuItem.Text = "Запустить обработку случайных статей";
             this.запуститьОбработкуToolStripMenuItem.Click += new System.EventHandler(this.запуститьОбработкуToolStripMenuItem_Click);
             // 
             // прерватьВыполнениеToolStripMenuItem
@@ -349,9 +333,9 @@
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripProgressBar1,
             this.toolStripStatusLabel1});
-            this.statusStrip.Location = new System.Drawing.Point(0, 297);
+            this.statusStrip.Location = new System.Drawing.Point(0, 327);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(643, 22);
+            this.statusStrip.Size = new System.Drawing.Size(683, 22);
             this.statusStrip.TabIndex = 8;
             this.statusStrip.Text = "statusStrip1";
             // 
@@ -390,9 +374,49 @@
             this.dataGridFilesProcessing.Name = "dataGridFilesProcessing";
             this.dataGridFilesProcessing.ReadOnly = true;
             this.dataGridFilesProcessing.RowHeadersVisible = false;
-            this.dataGridFilesProcessing.Size = new System.Drawing.Size(637, 76);
+            this.dataGridFilesProcessing.Size = new System.Drawing.Size(480, 94);
             this.dataGridFilesProcessing.TabIndex = 9;
-            this.dataGridFilesProcessing.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridFilesProcessing_CellContentClick);
+            // 
+            // textBoxLog
+            // 
+            this.textBoxLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxLog.Location = new System.Drawing.Point(3, 103);
+            this.textBoxLog.Multiline = true;
+            this.textBoxLog.Name = "textBoxLog";
+            this.textBoxLog.Size = new System.Drawing.Size(480, 65);
+            this.textBoxLog.TabIndex = 10;
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 24);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.dataGridStatistics);
+            this.splitContainer1.Panel1.Controls.Add(this.chart);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.textBoxWords);
+            this.splitContainer1.Panel2.Controls.Add(this.dataGridFilesProcessing);
+            this.splitContainer1.Panel2.Controls.Add(this.textBoxLog);
+            this.splitContainer1.Size = new System.Drawing.Size(683, 303);
+            this.splitContainer1.SplitterDistance = 128;
+            this.splitContainer1.TabIndex = 11;
+            // 
+            // textBoxWords
+            // 
+            this.textBoxWords.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxWords.Location = new System.Drawing.Point(489, 3);
+            this.textBoxWords.Multiline = true;
+            this.textBoxWords.Name = "textBoxWords";
+            this.textBoxWords.Size = new System.Drawing.Size(191, 165);
+            this.textBoxWords.TabIndex = 11;
             // 
             // Column3
             // 
@@ -402,6 +426,7 @@
             this.Column3.ReadOnly = true;
             this.Column3.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Column3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Column3.Width = 150;
             // 
             // Column4
             // 
@@ -451,41 +476,29 @@
             this.Column7.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.Column7.Width = 150;
             // 
-            // textBoxLog
+            // Column1
             // 
-            this.textBoxLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxLog.Location = new System.Drawing.Point(3, 85);
-            this.textBoxLog.Multiline = true;
-            this.textBoxLog.Name = "textBoxLog";
-            this.textBoxLog.Size = new System.Drawing.Size(637, 65);
-            this.textBoxLog.TabIndex = 10;
+            this.Column1.Frozen = true;
+            this.Column1.HeaderText = "Параметр";
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
+            this.Column1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Column1.Width = 120;
             // 
-            // splitContainer1
+            // Column2
             // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 24);
-            this.splitContainer1.Name = "splitContainer1";
-            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.dataGridStatistics);
-            this.splitContainer1.Panel1.Controls.Add(this.chart);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.dataGridFilesProcessing);
-            this.splitContainer1.Panel2.Controls.Add(this.textBoxLog);
-            this.splitContainer1.Size = new System.Drawing.Size(643, 273);
-            this.splitContainer1.SplitterDistance = 116;
-            this.splitContainer1.TabIndex = 11;
+            this.Column2.Frozen = true;
+            this.Column2.HeaderText = "Значение";
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            this.Column2.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Column2.Width = 150;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(643, 319);
+            this.ClientSize = new System.Drawing.Size(683, 349);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
@@ -532,8 +545,6 @@
         private System.Windows.Forms.ToolStripMenuItem отображатьГрафикToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem отображатьПрогрессToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem отображатьСтатистикуToolStripMenuItem;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.ToolStripMenuItem сохранитьКакToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog openDictDialog;
         private System.Windows.Forms.SaveFileDialog saveDictDialog;
@@ -545,14 +556,17 @@
         private System.Windows.Forms.ToolStripMenuItem отображатьЛогToolStripMenuItem;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
         private System.Windows.Forms.DataGridView dataGridFilesProcessing;
+        private System.Windows.Forms.TextBox textBoxLog;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.TextBox textBoxWords;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column8;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
-        private System.Windows.Forms.TextBox textBoxLog;
-        private System.Windows.Forms.SplitContainer splitContainer1;
     }
 }
 
