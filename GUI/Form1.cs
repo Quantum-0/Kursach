@@ -23,7 +23,7 @@ namespace GUI
          * 
          * WriteОтчёт <= RefreshAll? ===> куча циферок всяких
          * Append 1+ Dicts
-         * Добавить к видам textBoxWords
+         * Добавить к видам listBoxWords
          * Вывод лога
          * - Выводить после выполнения, на сколько процентов увеличился словарь (кол-во различных слов)
          * - После обработки файла выводить, какой процент слов в файле - новые, а какие встречались ранее
@@ -45,6 +45,7 @@ namespace GUI
         public bool AbortCalculating = false;
         public ulong LTProcessedChars;
         public ulong LTProcessedWords;
+        public List<string> Words = new List<string>();
 
         public string GetReadingSpeed()
         {
@@ -227,7 +228,8 @@ namespace GUI
                 double Dispersion = 0;
                 if (chart.Visible)
                 {
-                    textBoxWords.Clear();
+                    listBoxWords.Items.Clear();
+                    Words.Clear();
                     chart.Series[0].Points.Clear();
                     chart.Series[1].Points.Clear();
                     var list = MainTree.Export();
@@ -237,6 +239,7 @@ namespace GUI
                     for (int i = 0; i < maxX; i++)
                     {
                         chartdata.Add(list[Xvisualization(i)]);
+                        Words.Add(list[Xvisualization(i)].Word);
                     }
 
                     /*var FuncConst = 0d;
@@ -249,15 +252,13 @@ namespace GUI
                     {
                         var y1 = Convert.ToDouble(chartdata[i-1].Count);
                         //var y2 = FuncConst / (i);
-                        var y2 = chartdata[0].Count / i;
+                        var y2 = (double)chartdata[0].Count / i;
                         chart.Series[0].Points.AddXY(i, Yvisualization(y1));
                         chart.Series[1].Points.AddXY(i, Yvisualization(y2));
-                        textBoxWords.AppendText(i + ")" + chartdata[i-1] + " (" + y2 + ") \r\n");
+                        listBoxWords.Items.Add($"{i}) {chartdata[i - 1]} {Environment.NewLine}");
                         Dispersion += (y1 - y2) * (y1 - y2) / chartdata.Count;
                     }
                 }
-                textBoxWords.Select(0, 0);
-                textBoxWords.ScrollToCaret();
             }));
         }
         private void RefreshAll()
@@ -327,7 +328,7 @@ namespace GUI
             else
                 Log("Словарь дополнен из других словарей");
             FileChanged = true;
-            RefreshStatistics();
+            RefreshAll();
         }
 
         // UI для открытия/сохранения словарей
@@ -422,7 +423,7 @@ namespace GUI
             {
                 MainTree = TreeWorker.LoadTreeFromFile(fname);
                 Log("Словарь загружен из файла");
-                RefreshStatistics();
+                RefreshAll();
                 CurrentFile = fname;
                 FileChanged = false;
                 GC.Collect(2);
@@ -1226,7 +1227,26 @@ namespace GUI
 
             var x = (int)Math.Round(chart.ChartAreas[0].AxisX.PixelPositionToValue(e.X)) - 1;
             if (x >= 0 && x < chart.Series[0].Points.Last().XValue)
+            {
+                if (chart.Titles.Count == 0)
+                    chart.Titles.Add("Title");
                 chart.Series[0].Points[x].Color = System.Drawing.Color.Red;
+                listBoxWords.SelectedIndex = x;
+                var diff = Math.Abs(Math.Round(chart.Series[0].Points[x].YValues[0] - chart.Series[1].Points[x].YValues[0]));
+                chart.Titles[0].Text = $"Слово: {Words[x]}\n"
+                    + $"Количество: {chart.Series[0].Points[x].YValues[0]}\n"
+                    + $"Абсолютная отклонение от закона Ципфа: {diff} слов\n"
+                    + $"Относительное отклонение {Math.Round(100 * diff / chart.Series[1].Points[x].YValues[0], 1)}%";
+            }
+            else
+            {
+                chart.Titles.Clear();
+                listBoxWords.SelectedIndex = -1;
+            }
+        }
+        private void chart_MouseLeave(object sender, EventArgs e)
+        {
+            chart_MouseMove(sender, new MouseEventArgs(MouseButtons.None, 0, 0, 0, 0));
         }
     }
 }

@@ -71,7 +71,7 @@
             this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.textBoxLog = new System.Windows.Forms.TextBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.textBoxWords = new System.Windows.Forms.TextBox();
+            this.listBoxWords = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridStatistics)).BeginInit();
             this.menuStrip.SuspendLayout();
@@ -121,9 +121,9 @@
             series2.YValuesPerPoint = 4;
             this.chart.Series.Add(series1);
             this.chart.Series.Add(series2);
-            this.chart.Size = new System.Drawing.Size(400, 122);
+            this.chart.Size = new System.Drawing.Size(400, 127);
             this.chart.TabIndex = 0;
-            this.chart.Text = "chart1";
+            this.chart.MouseLeave += new System.EventHandler(this.chart_MouseLeave);
             this.chart.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chart_MouseMove);
             // 
             // dataGridStatistics
@@ -144,7 +144,7 @@
             this.dataGridStatistics.RowHeadersVisible = false;
             this.dataGridStatistics.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dataGridStatistics.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.dataGridStatistics.Size = new System.Drawing.Size(271, 122);
+            this.dataGridStatistics.Size = new System.Drawing.Size(271, 127);
             this.dataGridStatistics.TabIndex = 2;
             // 
             // Column1
@@ -352,7 +352,7 @@
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripProgressBar1,
             this.toolStripStatusLabel1});
-            this.statusStrip.Location = new System.Drawing.Point(0, 327);
+            this.statusStrip.Location = new System.Drawing.Point(0, 341);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(683, 22);
             this.statusStrip.TabIndex = 8;
@@ -393,7 +393,7 @@
             this.dataGridFilesProcessing.Name = "dataGridFilesProcessing";
             this.dataGridFilesProcessing.ReadOnly = true;
             this.dataGridFilesProcessing.RowHeadersVisible = false;
-            this.dataGridFilesProcessing.Size = new System.Drawing.Size(480, 94);
+            this.dataGridFilesProcessing.Size = new System.Drawing.Size(480, 103);
             this.dataGridFilesProcessing.TabIndex = 9;
             // 
             // Column3
@@ -459,7 +459,7 @@
             this.textBoxLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxLog.BackColor = System.Drawing.Color.White;
-            this.textBoxLog.Location = new System.Drawing.Point(3, 103);
+            this.textBoxLog.Location = new System.Drawing.Point(3, 112);
             this.textBoxLog.Multiline = true;
             this.textBoxLog.Name = "textBoxLog";
             this.textBoxLog.ReadOnly = true;
@@ -481,28 +481,28 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.textBoxWords);
+            this.splitContainer1.Panel2.Controls.Add(this.listBoxWords);
             this.splitContainer1.Panel2.Controls.Add(this.dataGridFilesProcessing);
             this.splitContainer1.Panel2.Controls.Add(this.textBoxLog);
-            this.splitContainer1.Size = new System.Drawing.Size(683, 303);
-            this.splitContainer1.SplitterDistance = 128;
+            this.splitContainer1.Size = new System.Drawing.Size(683, 317);
+            this.splitContainer1.SplitterDistance = 133;
             this.splitContainer1.TabIndex = 11;
             // 
-            // textBoxWords
+            // listBoxWords
             // 
-            this.textBoxWords.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.listBoxWords.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxWords.Location = new System.Drawing.Point(489, 3);
-            this.textBoxWords.Multiline = true;
-            this.textBoxWords.Name = "textBoxWords";
-            this.textBoxWords.Size = new System.Drawing.Size(191, 165);
-            this.textBoxWords.TabIndex = 11;
+            this.listBoxWords.FormattingEnabled = true;
+            this.listBoxWords.Location = new System.Drawing.Point(489, 3);
+            this.listBoxWords.Name = "listBoxWords";
+            this.listBoxWords.Size = new System.Drawing.Size(191, 173);
+            this.listBoxWords.TabIndex = 12;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(683, 349);
+            this.ClientSize = new System.Drawing.Size(683, 363);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
@@ -562,7 +562,6 @@
         private System.Windows.Forms.DataGridView dataGridFilesProcessing;
         private System.Windows.Forms.TextBox textBoxLog;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.TextBox textBoxWords;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
@@ -571,6 +570,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column8;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
+        private System.Windows.Forms.ListBox listBoxWords;
     }
 }
 
