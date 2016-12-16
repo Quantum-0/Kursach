@@ -317,22 +317,16 @@ namespace GUI
             if (openDictDialog.ShowDialog() != DialogResult.OK)
                 return;
             openDictDialog.Multiselect = false;
-
-            if (openDictDialog.FileNames.Length == 1)
+            foreach (var item in openDictDialog.FileNames)
             {
-                var tr = TreeWorker.LoadTreeFromFile(openDictDialog.FileName);
+                var tr = TreeWorker.LoadTreeFromFile(item);
                 MainTree.AppendTree(tr);
+            }
+            if (openDictDialog.FileNames.Length == 1)
                 Log("Словарь дополнен из другого словаря");
-            }
             else
-            {
-                foreach (var item in openDictDialog.FileNames)
-                {
-                    var tr = TreeWorker.LoadTreeFromFile(item);
-                    MainTree.AppendTree(tr);
-                }
                 Log("Словарь дополнен из других словарей");
-            }
+            FileChanged = true;
             RefreshStatistics();
         }
 
@@ -1218,6 +1212,21 @@ namespace GUI
             {
                 return null;
             }
+        }
+
+        private void chart_MouseMove(object sender, MouseEventArgs e)
+        {
+            foreach (var item in chart.Series[0].Points)
+            {
+                item.Color = chart.Series[0].Color;
+            }
+            
+            if (chart.Series[0].Points.Count == 0)
+                return;
+
+            var x = (int)Math.Round(chart.ChartAreas[0].AxisX.PixelPositionToValue(e.X)) - 1;
+            if (x >= 0 && x < chart.Series[0].Points.Last().XValue)
+                chart.Series[0].Points[x].Color = System.Drawing.Color.Red;
         }
     }
 }

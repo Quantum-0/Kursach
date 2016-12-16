@@ -124,6 +124,7 @@
             this.chart.Size = new System.Drawing.Size(400, 122);
             this.chart.TabIndex = 0;
             this.chart.Text = "chart1";
+            this.chart.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chart_MouseMove);
             // 
             // dataGridStatistics
             // 
