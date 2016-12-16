@@ -55,6 +55,7 @@
             this.отображатьПрогрессToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.отображатьСтатистикуToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.отображатьЛогToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.отображатьСписокСловToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openDictDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveDictDialog = new System.Windows.Forms.SaveFileDialog();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
@@ -294,7 +295,8 @@
             this.отображатьГрафикToolStripMenuItem,
             this.отображатьПрогрессToolStripMenuItem,
             this.отображатьСтатистикуToolStripMenuItem,
-            this.отображатьЛогToolStripMenuItem});
+            this.отображатьЛогToolStripMenuItem,
+            this.отображатьСписокСловToolStripMenuItem});
             this.видToolStripMenuItem.Name = "видToolStripMenuItem";
             this.видToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.видToolStripMenuItem.Text = "Вид";
@@ -338,6 +340,16 @@
             this.отображатьЛогToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
             this.отображатьЛогToolStripMenuItem.Text = "Отображать лог";
             this.отображатьЛогToolStripMenuItem.Click += new System.EventHandler(this.отображатьЛогToolStripMenuItem_Click);
+            // 
+            // отображатьСписокСловToolStripMenuItem
+            // 
+            this.отображатьСписокСловToolStripMenuItem.Checked = true;
+            this.отображатьСписокСловToolStripMenuItem.CheckOnClick = true;
+            this.отображатьСписокСловToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.отображатьСписокСловToolStripMenuItem.Name = "отображатьСписокСловToolStripMenuItem";
+            this.отображатьСписокСловToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.отображатьСписокСловToolStripMenuItem.Text = "Отображать список слов";
+            this.отображатьСписокСловToolStripMenuItem.Click += new System.EventHandler(this.отображатьСписокСловToolStripMenuItem_Click);
             // 
             // openDictDialog
             // 
@@ -393,7 +405,7 @@
             this.dataGridFilesProcessing.Name = "dataGridFilesProcessing";
             this.dataGridFilesProcessing.ReadOnly = true;
             this.dataGridFilesProcessing.RowHeadersVisible = false;
-            this.dataGridFilesProcessing.Size = new System.Drawing.Size(480, 103);
+            this.dataGridFilesProcessing.Size = new System.Drawing.Size(471, 103);
             this.dataGridFilesProcessing.TabIndex = 9;
             // 
             // Column3
@@ -464,7 +476,7 @@
             this.textBoxLog.Name = "textBoxLog";
             this.textBoxLog.ReadOnly = true;
             this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxLog.Size = new System.Drawing.Size(480, 65);
+            this.textBoxLog.Size = new System.Drawing.Size(471, 65);
             this.textBoxLog.TabIndex = 10;
             // 
             // splitContainer1
@@ -493,9 +505,10 @@
             this.listBoxWords.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listBoxWords.FormattingEnabled = true;
-            this.listBoxWords.Location = new System.Drawing.Point(489, 3);
+            this.listBoxWords.IntegralHeight = false;
+            this.listBoxWords.Location = new System.Drawing.Point(480, 3);
             this.listBoxWords.Name = "listBoxWords";
-            this.listBoxWords.Size = new System.Drawing.Size(191, 173);
+            this.listBoxWords.Size = new System.Drawing.Size(200, 173);
             this.listBoxWords.TabIndex = 12;
             // 
             // MainForm
@@ -571,6 +584,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
         private System.Windows.Forms.ListBox listBoxWords;
+        private System.Windows.Forms.ToolStripMenuItem отображатьСписокСловToolStripMenuItem;
     }
 }
 

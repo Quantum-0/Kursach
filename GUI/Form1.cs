@@ -22,8 +22,6 @@ namespace GUI
          * TODO:
          * 
          * WriteОтчёт <= RefreshAll? ===> куча циферок всяких
-         * Append 1+ Dicts
-         * Добавить к видам listBoxWords
          * Вывод лога
          * - Выводить после выполнения, на сколько процентов увеличился словарь (кол-во различных слов)
          * - После обработки файла выводить, какой процент слов в файле - новые, а какие встречались ранее
@@ -509,6 +507,12 @@ namespace GUI
             splitContainer1.Panel2Collapsed = false;
             RefreshControlsLocations();
         }
+        private void отображатьСписокСловToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            listBoxWords.Visible = отображатьСписокСловToolStripMenuItem.Checked;
+            splitContainer1.Panel2Collapsed = false;
+            RefreshControlsLocations();
+        }
         private void RefreshControlsLocations()
         {
             // Top
@@ -538,17 +542,23 @@ namespace GUI
                 }
             }
             // Bottom
+            listBoxWords.Width = 200;
+            listBoxWords.Left = splitContainer1.Panel2.Right - 200 - 3;
             if (dataGridFilesProcessing.Visible)
             {
                 if (textBoxLog.Visible)
                 {
                     textBoxLog.Height = 65;
+                    textBoxLog.Width = listBoxWords.Visible ? splitContainer1.Panel2.Right - 200 - 9 : splitContainer1.Panel2.Right - 6;
                     textBoxLog.Top = splitContainer1.Panel2.Bottom - splitContainer1.Panel2.Top - 65 - 3;
                     dataGridFilesProcessing.Top = 3;
                     dataGridFilesProcessing.Height = textBoxLog.Top - dataGridFilesProcessing.Top - 6;
+                    dataGridFilesProcessing.Width = listBoxWords.Visible ? splitContainer1.Panel2.Right - 200 - 9 : splitContainer1.Panel2.Right - 6;
+                    
                 }
                 else
                 {
+                    dataGridFilesProcessing.Width = listBoxWords.Visible ? splitContainer1.Panel2.Right - 200 - 9 : splitContainer1.Panel2.Right - 6;
                     dataGridFilesProcessing.Top = 3;
                     dataGridFilesProcessing.Height = splitContainer1.Panel2.Height - 6;
                 }
@@ -557,12 +567,19 @@ namespace GUI
             {
                 if (textBoxLog.Visible)
                 {
+                    textBoxLog.Width = listBoxWords.Visible ? splitContainer1.Panel2.Right - 200 - 9 : splitContainer1.Panel2.Right - 6;
                     textBoxLog.Top = 3;
                     textBoxLog.Height = splitContainer1.Panel2.Height - 6;
                 }
                 else
                 {
-                    splitContainer1.Panel2Collapsed = true;
+                    if (listBoxWords.Visible)
+                    {
+                        listBoxWords.Width = splitContainer1.Panel2.Right - 6;
+                        listBoxWords.Left = 3;
+                    }
+                    else
+                        splitContainer1.Panel2Collapsed = true;
                 }
             }
         }
@@ -1236,7 +1253,7 @@ namespace GUI
                 chart.Titles[0].Text = $"Слово: {Words[x]}\n"
                     + $"Количество: {chart.Series[0].Points[x].YValues[0]}\n"
                     + $"Абсолютная отклонение от закона Ципфа: {diff} слов\n"
-                    + $"Относительное отклонение {Math.Round(100 * diff / chart.Series[1].Points[x].YValues[0], 1)}%";
+                    + $"Относительное отклонение {Math.Round(100 * diff / Math.Max(chart.Series[1].Points[x].YValues[0], chart.Series[0].Points[x].YValues[0]), 1)}%";
             }
             else
             {
