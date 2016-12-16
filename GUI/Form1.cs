@@ -313,12 +313,26 @@ namespace GUI
         }
         private void AppendFile_Click(object sender, EventArgs e)
         {
+            openDictDialog.Multiselect = true;
             if (openDictDialog.ShowDialog() != DialogResult.OK)
                 return;
+            openDictDialog.Multiselect = false;
 
-            var tr = TreeWorker.LoadTreeFromFile(openDictDialog.FileName);
-            MainTree.AppendTree(tr);
-            Log("Словарь дополнен из другого словаря");
+            if (openDictDialog.FileNames.Length == 1)
+            {
+                var tr = TreeWorker.LoadTreeFromFile(openDictDialog.FileName);
+                MainTree.AppendTree(tr);
+                Log("Словарь дополнен из другого словаря");
+            }
+            else
+            {
+                foreach (var item in openDictDialog.FileNames)
+                {
+                    var tr = TreeWorker.LoadTreeFromFile(item);
+                    MainTree.AppendTree(tr);
+                }
+                Log("Словарь дополнен из других словарей");
+            }
             RefreshStatistics();
         }
 
