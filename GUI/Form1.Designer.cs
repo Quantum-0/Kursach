@@ -33,6 +33,8 @@
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.dataGridStatistics = new System.Windows.Forms.DataGridView();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.словарьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.закрытьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,17 +63,15 @@
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.dataGridFilesProcessing = new System.Windows.Forms.DataGridView();
-            this.textBoxLog = new System.Windows.Forms.TextBox();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.textBoxWords = new System.Windows.Forms.TextBox();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.textBoxLog = new System.Windows.Forms.TextBox();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.textBoxWords = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridStatistics)).BeginInit();
             this.menuStrip.SuspendLayout();
@@ -145,6 +145,24 @@
             this.dataGridStatistics.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.dataGridStatistics.Size = new System.Drawing.Size(271, 122);
             this.dataGridStatistics.TabIndex = 2;
+            // 
+            // Column1
+            // 
+            this.Column1.Frozen = true;
+            this.Column1.HeaderText = "Параметр";
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
+            this.Column1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Column1.Width = 120;
+            // 
+            // Column2
+            // 
+            this.Column2.Frozen = true;
+            this.Column2.HeaderText = "Значение";
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            this.Column2.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Column2.Width = 150;
             // 
             // menuStrip
             // 
@@ -377,47 +395,6 @@
             this.dataGridFilesProcessing.Size = new System.Drawing.Size(480, 94);
             this.dataGridFilesProcessing.TabIndex = 9;
             // 
-            // textBoxLog
-            // 
-            this.textBoxLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxLog.Location = new System.Drawing.Point(3, 103);
-            this.textBoxLog.Multiline = true;
-            this.textBoxLog.Name = "textBoxLog";
-            this.textBoxLog.Size = new System.Drawing.Size(480, 65);
-            this.textBoxLog.TabIndex = 10;
-            // 
-            // splitContainer1
-            // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 24);
-            this.splitContainer1.Name = "splitContainer1";
-            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.dataGridStatistics);
-            this.splitContainer1.Panel1.Controls.Add(this.chart);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.textBoxWords);
-            this.splitContainer1.Panel2.Controls.Add(this.dataGridFilesProcessing);
-            this.splitContainer1.Panel2.Controls.Add(this.textBoxLog);
-            this.splitContainer1.Size = new System.Drawing.Size(683, 303);
-            this.splitContainer1.SplitterDistance = 128;
-            this.splitContainer1.TabIndex = 11;
-            // 
-            // textBoxWords
-            // 
-            this.textBoxWords.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxWords.Location = new System.Drawing.Point(489, 3);
-            this.textBoxWords.Multiline = true;
-            this.textBoxWords.Name = "textBoxWords";
-            this.textBoxWords.Size = new System.Drawing.Size(191, 165);
-            this.textBoxWords.TabIndex = 11;
-            // 
             // Column3
             // 
             this.Column3.Frozen = true;
@@ -476,23 +453,49 @@
             this.Column7.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.Column7.Width = 150;
             // 
-            // Column1
+            // textBoxLog
             // 
-            this.Column1.Frozen = true;
-            this.Column1.HeaderText = "Параметр";
-            this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
-            this.Column1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Column1.Width = 120;
+            this.textBoxLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxLog.BackColor = System.Drawing.Color.White;
+            this.textBoxLog.Location = new System.Drawing.Point(3, 103);
+            this.textBoxLog.Multiline = true;
+            this.textBoxLog.Name = "textBoxLog";
+            this.textBoxLog.ReadOnly = true;
+            this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBoxLog.Size = new System.Drawing.Size(480, 65);
+            this.textBoxLog.TabIndex = 10;
             // 
-            // Column2
+            // splitContainer1
             // 
-            this.Column2.Frozen = true;
-            this.Column2.HeaderText = "Значение";
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
-            this.Column2.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Column2.Width = 150;
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 24);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.dataGridStatistics);
+            this.splitContainer1.Panel1.Controls.Add(this.chart);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.textBoxWords);
+            this.splitContainer1.Panel2.Controls.Add(this.dataGridFilesProcessing);
+            this.splitContainer1.Panel2.Controls.Add(this.textBoxLog);
+            this.splitContainer1.Size = new System.Drawing.Size(683, 303);
+            this.splitContainer1.SplitterDistance = 128;
+            this.splitContainer1.TabIndex = 11;
+            // 
+            // textBoxWords
+            // 
+            this.textBoxWords.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxWords.Location = new System.Drawing.Point(489, 3);
+            this.textBoxWords.Multiline = true;
+            this.textBoxWords.Name = "textBoxWords";
+            this.textBoxWords.Size = new System.Drawing.Size(191, 165);
+            this.textBoxWords.TabIndex = 11;
             // 
             // MainForm
             // 

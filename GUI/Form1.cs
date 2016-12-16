@@ -21,8 +21,9 @@ namespace GUI
         /*
          * TODO:
          * 
+         * WriteОтчёт <= RefreshAll? ===> куча циферок всяких
+         * Append 1+ Dicts
          * Добавить к видам textBoxWords
-         * Сделать чтоб textBoxWords не пролистывался
          * Вывод лога
          * - Выводить после выполнения, на сколько процентов увеличился словарь (кол-во различных слов)
          * - После обработки файла выводить, какой процент слов в файле - новые, а какие встречались ранее
@@ -218,6 +219,7 @@ namespace GUI
         }
         private void RefreshChart()
         {
+            Log("Обновление графика и списка слов");
             this.Invoke((Action)(() =>
             {
                 Func<int, int> Xvisualization = x => x;
@@ -254,6 +256,8 @@ namespace GUI
                         Dispersion += (y1 - y2) * (y1 - y2) / chartdata.Count;
                     }
                 }
+                textBoxWords.Select(0, 0);
+                textBoxWords.ScrollToCaret();
             }));
         }
         private void RefreshAll()
@@ -261,6 +265,32 @@ namespace GUI
             RefreshStatistics();
             RefreshFilesStats();
             RefreshChart();
+        }
+        private void Log(string Text)
+        {
+            this.Invoke((Action)(() =>
+            {
+                if (textBoxLog.Focused)
+                {
+                    int pos = textBoxLog.SelectionStart;
+                    int len = textBoxLog.SelectionLength;
+
+                    if (textBoxLog.Text != "")
+                        textBoxLog.Text += string.Format("\r\n[{0}] {1}", DateTime.Now.ToString("HH:mm:ss.fff"), Text);
+                    else
+                        textBoxLog.Text += string.Format("[{0}] {1}", DateTime.Now.ToString("HH:mm:ss.fff"), Text);
+
+                    textBoxLog.Select(pos, len);
+                    textBoxLog.ScrollToCaret();
+                }
+                else
+                {
+                    if (textBoxLog.Text != "")
+                        textBoxLog.AppendText(string.Format("\r\n[{0}] {1}", DateTime.Now.ToString("HH:mm:ss.fff"), Text));
+                    else
+                        textBoxLog.AppendText(string.Format("[{0}] {1}", DateTime.Now.ToString("HH:mm:ss.fff"), Text));
+                }
+            }));
         }
 
         // Обработчики нажатий кнопок в вернем меню
@@ -279,7 +309,7 @@ namespace GUI
         private void NewFile_Click(object sender, EventArgs e)
         {
             NewFile();
-            RefreshStatistics();
+            RefreshAll();
         }
         private void AppendFile_Click(object sender, EventArgs e)
         {
@@ -288,6 +318,7 @@ namespace GUI
 
             var tr = TreeWorker.LoadTreeFromFile(openDictDialog.FileName);
             MainTree.AppendTree(tr);
+            Log("Словарь дополнен из другого словаря");
             RefreshStatistics();
         }
 
@@ -382,6 +413,7 @@ namespace GUI
             try
             {
                 MainTree = TreeWorker.LoadTreeFromFile(fname);
+                Log("Словарь загружен из файла");
                 RefreshStatistics();
                 CurrentFile = fname;
                 FileChanged = false;
@@ -403,6 +435,7 @@ namespace GUI
                 TreeWorker.SaveTreeToFile(fname, MainTree);
                 CurrentFile = fname;
                 FileChanged = false;
+                Log("Словарь сохранён в файл");
             }
             catch
             {
@@ -529,6 +562,7 @@ namespace GUI
         {
             AbortCalculating = true;
             UpdateStatusStrip(100, "Прерывание обработки..");
+            Log("Выполняется прерывание обработки");
         }
         private void обработатьПапкуСФайламиToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -594,10 +628,12 @@ namespace GUI
 
         private void ProcessSingleFile(string fname)
         {
+            Log("Запрос на обработку файла");
             StartProcessing(new FileInfo[] { new FileInfo(fname) });
         }
         private void ProcessFolder(string dname)
         {
+            Log("Запрос на обработку файлов из папки");
             var DI = new DirectoryInfo(dname);
             StartProcessing(DI.EnumerateFiles("*.txt").ToArray());
         }
@@ -629,12 +665,14 @@ namespace GUI
             var LocalTrees = new CharTree[Files.Length];
 
             // Параллельная обработка всех файлов
+            Log("Начало параллельной обработки файлов");
             CommonSW.Start();
             Parallel.For(0, Files.Length, i =>
             {
                 // Инициализация
                 ProcessingFiles++;
                 States[i] = ProcessingState.Processing;
+                Log($"- Начало обработки файла {ShortFNames[i]}");
                 long iteration = 0;
                 long lastiterationsvalue = 0;
                 long lastswvalue = 0;
@@ -710,6 +748,7 @@ namespace GUI
                     ReadingSpeed[i] = 0;
                     ProcessingSpeed[i] = 0;
                 }
+                Log($"- Файл {ShortFNames[i]} обработан");
 
                 // Окончание обработки, объединение с основным деревом
                 States[i] = ProcessingState.Merging;
@@ -734,6 +773,7 @@ namespace GUI
             if (AbortCalculating && ProcessingFiles == 0)
             {
                 UpdateStatusStrip(100, "Обработка прервана");
+                Log("Параллельная обработка была прервана");
                 AbortCalculating = false;
             }
             else
@@ -742,6 +782,8 @@ namespace GUI
                     UpdateStatusStrip(100, "Обработка файла выполнена");
                 else
                     UpdateStatusStrip(100, String.Format("Обработка {0} файлов выполнена", Files.Length));
+                
+                Log("Параллельная обработка файлов завершена");
             }
             
             // Обновление интерфейса
@@ -772,13 +814,15 @@ namespace GUI
             Processing,
             Merging,
             Finished,
-            Downloading
+            Downloading,
+            Aborted
         }
         private void ProcessRandomPage()
         {
             Task.Run(() =>
             {
                 // Инициализация процесса обработки
+                Log("Начало обработки случайно статьи с Википедии");
                 FileChanged = true;
                 ProcessingFiles++;
                 UpdateCaption();
@@ -791,6 +835,7 @@ namespace GUI
                 var Percents = new int[1];
                 var CommonSW = new Stopwatch();
                 RefreshFilesStats(new string[] { "???" }, new int[] { 0 }, States, Percents, ReadingSpeed, ProcessingSpeed);
+                Log("Скачивание..");
 
                 // Получение текста
                 var ArticleTask = WikiGetRandomText();
@@ -815,6 +860,7 @@ namespace GUI
                 var LocalTree = MainTree;
                 var Word = new StringBuilder();
                 int WordsFound = 0;
+                Log("Обработка текста скаченной статьи");
 
                 while (iteration < Article.Item2.Length && !AbortCalculating)
                 {
@@ -889,11 +935,13 @@ namespace GUI
                 if (AbortCalculating)
                 {
                     UpdateStatusStrip(100, "Обработка прервана");
+                    Log("Обработка была прервана");
                     AbortCalculating = false;
                 }
                 else
                 {
                     UpdateStatusStrip(100, "Обработка статьи завершена");
+                    Log("Обработка текста завершена");
                 }
 
                 // Обновление интерфейса
@@ -921,135 +969,169 @@ namespace GUI
         {
             Task.Run(() =>
             {
-                // Инициализация процесса обработки
-                UpdateStatusStrip(0, "Загрузка списка случайных статей");
-                var Articles = WikiGetRandomTitles();
-                if (Articles == null)
-                {
-                    UpdateStatusStrip(0, "Ошибка загрузки");
-                    return;
-                }
-                FileChanged = true;
-                UpdateCaption();
-                var CommonSW = new Stopwatch();
+                Log("Запуск обработки случайных статей");
+                do {
 
-                // Локальная инициализация
-                var Percents = new int[100];
-                var States = new ProcessingState[100];
-                var Lenghts = new int[100];
-                var LocalSW = new Stopwatch[100];
-                var ReadingSpeed = new float[100];
-                var ProcessingSpeed = new float[100];
-                var ProccessedChars = new int[100];
-                var ProccessedWords = new int[100];
-                ProcessingFiles += 100;
-                RefreshFilesStats(Articles.Item2, Lenghts, States, Percents, ReadingSpeed, ProcessingSpeed);
-                CommonSW.Start();
-
-                //for (int i = 0; i < 100; i++)
-                Parallel.For(0, 100, i =>
-                {
-                    if (AbortCalculating)
-                        return;
-                    // Загрузка
-                    States[i] = ProcessingState.Downloading;
-                    RefreshFilesStats(Articles.Item2, Lenghts, States, Percents, ReadingSpeed, ProcessingSpeed);
-                    //Refresh();
-                    var Text = WikiGetTextById(Articles.Item1[i]);
-
-                    // Инициализация
-                    int iteration = 0;
-                    int lastiterationsvalue = 0;
-                    long lastswvalue = 0;
-                    int lastwordsvalue = 0;
-                    var Word = new StringBuilder();
-                    int WordsFound = 0;
-                    Lenghts[i] = Text.Length;
-                    LocalSW[i] = new Stopwatch();
-                    States[i] = ProcessingState.Processing;
-                    RefreshFilesStats(Articles.Item2, Lenghts, States, Percents, ReadingSpeed, ProcessingSpeed);
-                    //Refresh();
-                    var Stream = new StringReader(Text);
-                    LocalSW[i].Start();
-
-                    while (iteration < Text.Length && !AbortCalculating)
+                    // Инициализация процесса обработки
+                    UpdateStatusStrip(0, "Загрузка списка случайных статей");
+                    Log("Загрузка списка статей");
+                    var Articles = WikiGetRandomTitles();
+                    if (Articles == null)
                     {
-                        // Считывание символа
-                        var c = Convert.ToChar(Stream.Read());
-                        iteration++;
-
-                        // Обновление визуализации данных
-                        if (iteration > Text.Length * (Percents[i] + 10) / 100)
-                        {
-                            // Обновление локальных данных
-                            Percents[i] += 10;
-                            ReadingSpeed[i] = (float)(iteration - lastiterationsvalue) / (LocalSW[i].ElapsedMilliseconds - lastswvalue);
-                            ProcessingSpeed[i] = (float)(WordsFound - lastwordsvalue) / (LocalSW[i].ElapsedMilliseconds - lastswvalue);
-                            lastswvalue = LocalSW[i].ElapsedMilliseconds;
-                            lastiterationsvalue = iteration;
-                            lastwordsvalue = WordsFound;
-                            ProccessedChars[i] = iteration;
-                            ProccessedWords[i] = WordsFound;
-
-                            // Обновление глобальных данных
-                            /*this.LTProcessedChars = 0;
-                            this.LTProcessedWords = 0;
-                            for (int j = 0; j < 100; j++)
-                            {
-                                this.LTProcessedChars += (ulong)ProccessedChars[j];
-                                this.LTProcessedWords += (ulong)ProccessedWords[j];
-                            }*/
-                            this.ReadingSpeed = ReadingSpeed.Sum();
-                            this.ProcessingSpeed = ProcessingSpeed.Sum();
-                            this.ProcessingTime = CommonSW.ElapsedMilliseconds;
-                            UpdateStatusStrip(Percents.Sum() / 100);
-                            RefreshStatistics();
-                            RefreshFilesStats(Articles.Item2, Lenghts, States, Percents, ReadingSpeed, ProcessingSpeed);
-                            //Refresh();
-                        }
-
-                        // Обработка считанных данных
-                        if (char.IsLetter(c))
-                        {
-                            Word.Append(char.ToUpper(c));
-                        }
-                        else if (Word.Length != 0)
-                        {
-                            WordsFound++;
-                            while (true)
-                            {
-                                if (MainTree.AddWord(Word.ToString()))
-                                    break;
-
-                                Thread.Sleep(0);
-                            }
-                            Word.Clear();
-                        }
+                        UpdateStatusStrip(0, "Ошибка загрузки");
+                        return;
                     }
-                    Percents[i] = 100;
-                    ReadingSpeed[i] = 0;
-                    ProcessingSpeed[i] = 0;
+                    FileChanged = true;
+                    UpdateCaption();
+                    var CommonSW = new Stopwatch();
 
-                    // Окончание обработки
-                    ProcessingFiles--;
-                    MainTree.FilesProcessed++;
-                    States[i] = ProcessingState.Finished;
-                    LocalSW[i].Stop();
-                    LocalSW[i].Reset();
+                    // Локальная инициализация
+                    var Percents = new int[100];
+                    var States = new ProcessingState[100];
+                    var Lenghts = new int[100];
+                    var LocalSW = new Stopwatch[100];
+                    var ReadingSpeed = new float[100];
+                    var ProcessingSpeed = new float[100];
+                    var ProccessedChars = new int[100];
+                    var ProccessedWords = new int[100];
+                    ProcessingFiles += 100;
+                    RefreshFilesStats(Articles.Item2, Lenghts, States, Percents, ReadingSpeed, ProcessingSpeed);
+                    CommonSW.Start();
+                    
+                    Log("Список статей загружен, запуск параллельного скачивания и обработки текстов");
+                    Parallel.For(0, 100, i =>
+                    {
+                        if (AbortCalculating)
+                        {
+                            States[i] = ProcessingState.Aborted;
+                            return;
+                        }
 
-                });
-                this.ReadingSpeed = 0;
-                this.ProcessingSpeed = 0;
-                LTProcessedChars = 0;
-                LTProcessedWords = 0;
-                CommonSW.Stop();
-                ProcessingTime = 0;
-                MainTree.ProcessingTime += Convert.ToUInt64(CommonSW.ElapsedMilliseconds);
+                        Log($"- Скачивание статьи \"{Articles.Item2[i]}\"");
+                        var DownloadingID = WikiStartGettingTextById(Articles.Item1[i]);
+                        // Загрузка
+                        States[i] = ProcessingState.Downloading;
+                        RefreshFilesStats(Articles.Item2, Lenghts, States, Percents, ReadingSpeed, ProcessingSpeed);
+                        var Text = WikiFinishGettingTextById(DownloadingID);
+
+                        // Инициализация
+                        Log($"- Статья \"{Articles.Item2[i]}\" загружена, начало обработки текста");
+                        int iteration = 0;
+                        int lastiterationsvalue = 0;
+                        long lastswvalue = 0;
+                        int lastwordsvalue = 0;
+                        var Word = new StringBuilder();
+                        int WordsFound = 0;
+                        Lenghts[i] = Text.Length;
+                        LocalSW[i] = new Stopwatch();
+                        States[i] = ProcessingState.Processing;
+                        RefreshFilesStats(Articles.Item2, Lenghts, States, Percents, ReadingSpeed, ProcessingSpeed);
+                        //Refresh();
+                        var Stream = new StringReader(Text);
+                        LocalSW[i].Start();
+
+                        while (iteration < Text.Length && !AbortCalculating)
+                        {
+                            // Считывание символа
+                            var c = Convert.ToChar(Stream.Read());
+                            iteration++;
+
+                            // Обновление визуализации данных
+                            if (iteration > Text.Length * (Percents[i] + 10) / 100)
+                            {
+                                // Обновление локальных данных
+                                Percents[i] += 10;
+                                ReadingSpeed[i] = (float)(iteration - lastiterationsvalue) / (LocalSW[i].ElapsedMilliseconds - lastswvalue);
+                                ProcessingSpeed[i] = (float)(WordsFound - lastwordsvalue) / (LocalSW[i].ElapsedMilliseconds - lastswvalue);
+                                lastswvalue = LocalSW[i].ElapsedMilliseconds;
+                                lastiterationsvalue = iteration;
+                                lastwordsvalue = WordsFound;
+                                ProccessedChars[i] = iteration;
+                                ProccessedWords[i] = WordsFound;
+
+                                // Обновление глобальных данных
+                                /*this.LTProcessedChars = 0;
+                                this.LTProcessedWords = 0;
+                                for (int j = 0; j < 100; j++)
+                                {
+                                    this.LTProcessedChars += (ulong)ProccessedChars[j];
+                                    this.LTProcessedWords += (ulong)ProccessedWords[j];
+                                }*/
+                                this.ReadingSpeed = ReadingSpeed.Sum();
+                                this.ProcessingSpeed = ProcessingSpeed.Sum();
+                                this.ProcessingTime = CommonSW.ElapsedMilliseconds;
+                                UpdateStatusStrip(Percents.Sum() / 100);
+                                RefreshStatistics();
+                                RefreshFilesStats(Articles.Item2, Lenghts, States, Percents, ReadingSpeed, ProcessingSpeed);
+                                //Refresh();
+                            }
+
+                            // Обработка считанных данных
+                            if (char.IsLetter(c))
+                            {
+                                Word.Append(char.ToUpper(c));
+                            }
+                            else if (Word.Length != 0)
+                            {
+                                WordsFound++;
+                                lock (MainTree)
+                                {
+                                    while (true)
+                                    {
+                                        if (MainTree.AddWord(Word.ToString()))
+                                            break;
+
+                                        Thread.Sleep(0);
+                                    }
+                                }
+                                Word.Clear();
+                            }
+                        }
+                        Percents[i] = 100;
+                        ReadingSpeed[i] = 0;
+                        ProcessingSpeed[i] = 0;
+
+                        // Окончание обработки
+                        ProcessingFiles--;
+                        MainTree.FilesProcessed++;
+                        if (AbortCalculating)
+                            States[i] = ProcessingState.Aborted;
+                        else
+                            States[i] = ProcessingState.Finished;
+                        LocalSW[i].Stop();
+                        LocalSW[i].Reset();
+                        Log($"- Обработка статьи \"{Articles.Item2[i]}\" завершена");
+                    });
+                    Log("Параллельная обработка статей завершена");
+                    this.ReadingSpeed = 0;
+                    this.ProcessingSpeed = 0;
+                    LTProcessedChars = 0;
+                    LTProcessedWords = 0;
+                    CommonSW.Stop();
+                    ProcessingTime = 0;
+                    MainTree.ProcessingTime += Convert.ToUInt64(CommonSW.ElapsedMilliseconds);
+                    
+                    RefreshChart();
+                    RefreshStatistics();
+                    RefreshFilesStats(Articles.Item2, Lenghts, States, Percents, ReadingSpeed, ProcessingSpeed);
+
+                    // Чистка мусора
+                    CommonSW = null;
+                    Percents = null;
+                    ReadingSpeed = null;
+                    ProcessingSpeed = null;
+                    ProccessedWords = null;
+                    ProccessedChars = null;
+                    States = null;
+                    GC.Collect(1);
+                }
+                while (!AbortCalculating);
 
                 // Вывод статуса внизу
                 if (AbortCalculating)
                 {
                     UpdateStatusStrip(100, "Обработка прервана");
+                    Log("Обработка была прервана");
                     AbortCalculating = false;
                     ProcessingFiles = 0;
                 }
@@ -1058,26 +1140,13 @@ namespace GUI
                     UpdateStatusStrip(100, "Обработка статей завершена");
                 }
 
-                // Обновление интерфейса
+                // Обновление интерфейса после выхода из обработки
                 this.Invoke((Action)(() =>
                 {
                     файлToolStripMenuItem.Enabled = true;
                     wikipediaToolStripMenuItem.Enabled = true;
                     прерватьВыполнениеToolStripMenuItem.Enabled = false;
-                    RefreshChart();
                 }));
-                RefreshStatistics();
-                RefreshFilesStats(Articles.Item2, Lenghts, States, Percents, ReadingSpeed, ProcessingSpeed);
-
-            // Чистка мусора
-            CommonSW = null;
-            Percents = null;
-            ReadingSpeed = null;
-            ProcessingSpeed = null;
-            ProccessedWords = null;
-            ProccessedChars = null;
-            States = null;
-            GC.Collect(1);
             });
         }
 
@@ -1099,11 +1168,15 @@ namespace GUI
                 return null;
             }
         }
-        private string WikiGetTextById(string id)
+        private Guid WikiStartGettingTextById(string id)
+        {
+            return Downloader.StartDownloadString("https://ru.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&pageids=" + id + "&exlimit=1&explaintext=1&exsectionformat=plain");
+        }
+        private string WikiFinishGettingTextById(Guid guid)
         {
             try
             {
-                var d = Downloader.WaitForDownloaded(Downloader.StartDownloadString("https://ru.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&pageids=" + id + "&exlimit=1&explaintext=1&exsectionformat=plain"));
+                var d = Downloader.WaitForDownloaded(guid);
                 var dd = (JObject)Newtonsoft.Json.JsonConvert.DeserializeObject(d);
                 var c = dd.Last.Last.Last.Last.Last.Last.Last.Last.ToString();
                 return c;
