@@ -63,10 +63,12 @@ namespace GUI
                 Task.Run((Action)DownloadFile);
             }
 
-            while (!Aborting && !Finished[guid])
+            var TimeoutSW = new Stopwatch();
+            TimeoutSW.Start();
+            while (!Aborting && !Finished[guid] && TimeoutSW.ElapsedMilliseconds < 30*1000)
                 Thread.Sleep(1);
 
-            if (!Aborting)
+            if (!Aborting && TimeoutSW.ElapsedMilliseconds < 30*1000)
                 return GetResultAndRemoveFromLists(guid);
             else
                 return new ResultWithTime("", 0);
