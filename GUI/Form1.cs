@@ -143,41 +143,44 @@ namespace GUI
         // Обновление выводимых данных
         private void RefreshStatistics(bool Init = false)
         {
-            if (Init)
+            Invoke((Action)(() =>
             {
-                dataGridStatistics.RowCount = 10;
-                dataGridStatistics[0, 0].Value = "Скорость чтения файла:";
-                dataGridStatistics[0, 1].Value = "Средняя скорость чтения файла:";
-                dataGridStatistics[0, 2].Value = "Скорость построения словаря:";
-                dataGridStatistics[0, 3].Value = "Средняя скорость построения словаря:";
-                dataGridStatistics[0, 4].Value = "Обработанно данных:";
-                dataGridStatistics[0, 5].Value = "Обработанно слов:";
-                dataGridStatistics[0, 6].Value = "Загрузка ОЗУ:";
-                dataGridStatistics[0, 7].Value = "Объём словаря:";
-                dataGridStatistics[0, 8].Value = "Обработано файлов:";
-                dataGridStatistics[0, 9].Value = "Общее время обработки:";
-            }
-
-            if (MainTree != null)
-            {
-                dataGridStatistics[1, 0].Value = GetReadingSpeed();
-                dataGridStatistics[1, 1].Value = GetMidReadingSpeed();
-                dataGridStatistics[1, 2].Value = GetProcessingSpeed();
-                dataGridStatistics[1, 3].Value = GetMidProcessingSpeed();
-                dataGridStatistics[1, 4].Value = GetProcessedBytes();
-                dataGridStatistics[1, 5].Value = GetProcessedWords();
-                dataGridStatistics[1, 6].Value = GC.GetTotalMemory(false) / (1024 * 512) / 2f + " Мб";
-                dataGridStatistics[1, 7].Value = GetDifferentWords();
-                dataGridStatistics[1, 8].Value = GetProcessedFiles();
-                dataGridStatistics[1, 9].Value = GetTotalProcessingTime(); 
-            }
-            else
-            {
-                for (int i = 0; i < dataGridStatistics.RowCount; i++)
+                if (Init)
                 {
-                    dataGridStatistics[1, i].Value = "Словарь не открыт";
+                    dataGridStatistics.RowCount = 10;
+                    dataGridStatistics[0, 0].Value = "Скорость чтения файла:";
+                    dataGridStatistics[0, 1].Value = "Средняя скорость чтения файла:";
+                    dataGridStatistics[0, 2].Value = "Скорость построения словаря:";
+                    dataGridStatistics[0, 3].Value = "Средняя скорость построения словаря:";
+                    dataGridStatistics[0, 4].Value = "Обработанно данных:";
+                    dataGridStatistics[0, 5].Value = "Обработанно слов:";
+                    dataGridStatistics[0, 6].Value = "Загрузка ОЗУ:";
+                    dataGridStatistics[0, 7].Value = "Объём словаря:";
+                    dataGridStatistics[0, 8].Value = "Обработано файлов:";
+                    dataGridStatistics[0, 9].Value = "Общее время обработки:";
                 }
-            }
+
+                if (MainTree != null)
+                {
+                    dataGridStatistics[1, 0].Value = GetReadingSpeed();
+                    dataGridStatistics[1, 1].Value = GetMidReadingSpeed();
+                    dataGridStatistics[1, 2].Value = GetProcessingSpeed();
+                    dataGridStatistics[1, 3].Value = GetMidProcessingSpeed();
+                    dataGridStatistics[1, 4].Value = GetProcessedBytes();
+                    dataGridStatistics[1, 5].Value = GetProcessedWords();
+                    dataGridStatistics[1, 6].Value = GC.GetTotalMemory(false) / (1024 * 512) / 2f + " Мб";
+                    dataGridStatistics[1, 7].Value = GetDifferentWords();
+                    dataGridStatistics[1, 8].Value = GetProcessedFiles();
+                    dataGridStatistics[1, 9].Value = GetTotalProcessingTime();
+                }
+                else
+                {
+                    for (int i = 0; i < dataGridStatistics.RowCount; i++)
+                    {
+                        dataGridStatistics[1, i].Value = "Словарь не открыт";
+                    }
+                }
+            }));
         }
         private void RefreshFilesStats(IEnumerable<ProcessingEntity> ProcessingEntities)
         {
@@ -307,6 +310,16 @@ namespace GUI
                     else
                         textBoxLog.AppendText(string.Format("[{0}] {1}", DateTime.Now.ToString("HH:mm:ss.fff"), Text));
                 }
+            }));
+        }
+        private void LockMenu(bool Lock)
+        {
+            Invoke((Action)(() => {
+                файлToolStripMenuItem.Enabled = !Lock;
+                wikipediaToolStripMenuItem.Enabled = !Lock;
+                прерватьВыполнениеToolStripMenuItem.Enabled = Lock;
+                словарьToolStripMenuItem.Enabled = !Lock;
+                отображатьГрафикToolStripMenuItem.Enabled = !Lock;
             }));
         }
 
@@ -624,36 +637,22 @@ namespace GUI
         {
             if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
                 return;
-
-            файлToolStripMenuItem.Enabled = false;
-            wikipediaToolStripMenuItem.Enabled = false;
-            прерватьВыполнениеToolStripMenuItem.Enabled = true;
-
             Task.Run(() => ProcessFolder(folderBrowserDialog.SelectedPath));
         }
         private void обработатьТекстовыйФайлToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (openFileDialog.ShowDialog() != DialogResult.OK)
                 return;
-
-            файлToolStripMenuItem.Enabled = false;
-            wikipediaToolStripMenuItem.Enabled = false;
-            прерватьВыполнениеToolStripMenuItem.Enabled = true;
-
             Task.Run(() => ProcessSingleFile(openFileDialog.FileName));
         }
         private void обработатьСлучайнуюСтатьюToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            файлToolStripMenuItem.Enabled = false;
-            wikipediaToolStripMenuItem.Enabled = false;
-            прерватьВыполнениеToolStripMenuItem.Enabled = true;
+            LockMenu(true);
             ProcessRandomPage();
         }
         private void запуститьОбработкуToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            файлToolStripMenuItem.Enabled = false;
-            wikipediaToolStripMenuItem.Enabled = false;
-            прерватьВыполнениеToolStripMenuItem.Enabled = true;
+            LockMenu(true);
             ProcessRandomPages();
         }
         private void обработатьNСтатейToolStripMenuItem_Click(object sender, EventArgs e)
@@ -661,9 +660,7 @@ namespace GUI
             var dialog = new FormInputPagesCount();
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                файлToolStripMenuItem.Enabled = false;
-                wikipediaToolStripMenuItem.Enabled = false;
-                прерватьВыполнениеToolStripMenuItem.Enabled = true;
+                LockMenu(true);
                 ProcessRandomPages(Convert.ToByte(dialog.numericUpDown1.Value), false);
             }
         }
@@ -705,6 +702,8 @@ namespace GUI
             // Выход если нет файлов
             if (Files.Length == 0)
                 return;
+
+            LockMenu(true);
 
             // Глобальная инициализация процесса обработки
             var BeforeDiffWords = MainTree.DifferentWords;
@@ -864,15 +863,10 @@ namespace GUI
             }
 
             // Обновление интерфейса
-            this.Invoke((Action)(() =>
-            {
-                файлToolStripMenuItem.Enabled = true;
-                wikipediaToolStripMenuItem.Enabled = true;
-                прерватьВыполнениеToolStripMenuItem.Enabled = false;
-                RefreshChart();
-                RefreshStatistics();
-                RefreshFilesStats(Entities);
-            }));
+            LockMenu(false);
+            RefreshChart();
+            RefreshStatistics();
+            RefreshFilesStats(Entities);
 
             // Чистка мусора
             CommonSW = null;
@@ -1018,13 +1012,8 @@ namespace GUI
                 }
 
                 // Обновление интерфейса
-                this.Invoke((Action)(() =>
-                {
-                    файлToolStripMenuItem.Enabled = true;
-                    wikipediaToolStripMenuItem.Enabled = true;
-                    прерватьВыполнениеToolStripMenuItem.Enabled = false;
-                    RefreshChart();
-                }));
+                LockMenu(false);
+                RefreshChart();
                 RefreshStatistics();
                 RefreshFilesStats(new string[] { Article.Item1 }, new int[] { TotalSize }, States, Percents, ReadingSpeed, ProcessingSpeed);
 
@@ -1038,7 +1027,7 @@ namespace GUI
                 GC.Collect(1);
             });
         }
-        private void ProcessRandomPages(byte Count = 100, bool Repeat = true)
+        private void ProcessRandomPages(byte Count = 20, bool Repeat = true)
         {
             Task.Run(() =>
             {
@@ -1052,7 +1041,8 @@ namespace GUI
                     var ArticleHeaders = WikiGetRandomTitles(Count);
                     if (ArticleHeaders == null)
                     {
-                        UpdateStatusStrip(0, "Ошибка загрузки");
+                        UpdateStatusStrip(0, "Загрузка прервана");
+                        LockMenu(false);
                         return;
                     }
                     FileChanged = true;
@@ -1218,12 +1208,7 @@ namespace GUI
                 }
 
                 // Обновление интерфейса после выхода из обработки
-                this.Invoke((Action)(() =>
-                {
-                    файлToolStripMenuItem.Enabled = true;
-                    wikipediaToolStripMenuItem.Enabled = true;
-                    прерватьВыполнениеToolStripMenuItem.Enabled = false;
-                }));
+                LockMenu(false);
             });
         }
 
