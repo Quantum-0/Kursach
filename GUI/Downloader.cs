@@ -29,20 +29,32 @@ namespace GUI
         static List<Guid> DownloadingList = new List<Guid>();
         static bool Processing = false;
         static Guid CurrentTask;
+        static bool Aborting;
+        static object Sync = new object();
         
+        public static void AbortTasks()
+        {
+            Aborting = true;
+        }
         public static Guid StartDownloadString(string Url)
         {
-            Guid guid = Guid.NewGuid();
-            DownloadingList.Add(guid);
-            Urls.Add(guid, Url);
-            Finished.Add(guid, false);
-            SWs[guid] = new Stopwatch();
-            if (!Processing)
-                Task.Run((Action)DownloadFile);
-            //Task.Run((Action)StartProcessing);
+            lock (Sync)
+            {
+                Aborting = false;
+                Guid guid = Guid.NewGuid();
+                Urls[guid] = Url;
+                Finished[guid] = false;
+                lock (DownloadingList)
+                {
+                    DownloadingList.Add(guid);
+                }
+                if (!Processing)
+                    Task.Run((Action)DownloadFile);
+                //Task.Run((Action)StartProcessing);
 
-            Processing = true;
-            return guid;
+                Processing = true;
+                return guid;
+            }
         }
         public static ResultWithTime WaitForDownloadedWithTime(Guid guid)
         {
@@ -52,15 +64,19 @@ namespace GUI
                 Task.Run((Action)DownloadFile);
             }
 
-            while (!Finished[guid])
-                Thread.Sleep(10);
+            while (!Aborting && !Finished[guid])
+                Thread.Sleep(1);
 
-            return GetResultAndRemoveFromLists(guid);
+            if (!Aborting)
+                return GetResultAndRemoveFromLists(guid);
+            else
+                return new ResultWithTime("", 0);
         }
         public static string WaitForDownloaded(Guid guid)
         {
             return WaitForDownloadedWithTime(guid).Result;
         }
+
         private static ResultWithTime GetResultAndRemoveFromLists(Guid guid)
         {
             var result = new ResultWithTime(Results[guid], SWs[guid].ElapsedMilliseconds);
@@ -73,30 +89,37 @@ namespace GUI
         
         private static void DownloadFile()
         {
-            if (DownloadingList.Any())
+            lock (DownloadingList)
             {
-                CurrentTask = DownloadingList.First();
-                DownloadingList.Remove(CurrentTask);
+                if (DownloadingList.Any())
+                {
+                    CurrentTask = DownloadingList.First();
+                    DownloadingList.Remove(CurrentTask);
 
-                WebClient webClient = new WebClient();
-                webClient.DownloadStringCompleted += WebClient_DownloadStringCompleted;
-                webClient.DownloadStringAsync(new Uri(Urls[CurrentTask]));
-                SWs[CurrentTask].Start();
-            }
-            else
-            {
+                    WebClient webClient = new WebClient();
+                    webClient.DownloadStringCompleted += WebClient_DownloadStringCompleted;
+                    webClient.DownloadStringAsync(new Uri(Urls[CurrentTask]));
+                    SWs[CurrentTask] = new Stopwatch();
+                    SWs[CurrentTask].Start();
+                }
+                else
+                {
                 Processing = false;
+                }
             }
         }
 
         private static void WebClient_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
-            SWs[CurrentTask].Stop();
+            //if (e.Error != null)
+               //;
+            //SWs[CurrentTask].Stop();
             Results[CurrentTask] = e.Result;
             Finished[CurrentTask] = true;
             ((WebClient)sender).DownloadStringCompleted -= WebClient_DownloadStringCompleted;
             ((WebClient)sender).Dispose();
-            DownloadFile();
+            Task.Run((Action)DownloadFile);
+            //DownloadFile();
         }
     }
 }
