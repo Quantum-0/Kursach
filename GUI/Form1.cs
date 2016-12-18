@@ -22,7 +22,6 @@ namespace GUI
          * TODO:
          * ловить эксепшн в скачивании
          * WriteОтчёт <= RefreshAll? ===> куча циферок всяких
-         * Обрабатывать статьи с вики "пачками"
          * Блокировать возможность работы со словарём в меню пока идт обработка
          * Tree Files Merging (Reduce)
          */
@@ -38,6 +37,7 @@ namespace GUI
         public bool AbortCalculating = false;
         public ulong LTProcessedChars;
         public ulong LTProcessedWords;
+        public double Averange;
         public List<string> Words = new List<string>();
 
         public string GetReadingSpeed()
@@ -122,6 +122,10 @@ namespace GUI
         {
             return ((MainTree.ProcessingTime + Convert.ToUInt64(ProcessingTime)) / 1000f).ToString("F1") + " сек";
         }
+        public string GetAverange()
+        {
+            return (Averange * 100).ToString("F1") + "%";
+        }
 
         public MainForm()
         {
@@ -147,7 +151,7 @@ namespace GUI
             {
                 if (Init)
                 {
-                    dataGridStatistics.RowCount = 10;
+                    dataGridStatistics.RowCount = 11;
                     dataGridStatistics[0, 0].Value = "Скорость чтения файла:";
                     dataGridStatistics[0, 1].Value = "Средняя скорость чтения файла:";
                     dataGridStatistics[0, 2].Value = "Скорость построения словаря:";
@@ -158,6 +162,7 @@ namespace GUI
                     dataGridStatistics[0, 7].Value = "Объём словаря:";
                     dataGridStatistics[0, 8].Value = "Обработано файлов:";
                     dataGridStatistics[0, 9].Value = "Общее время обработки:";
+                    dataGridStatistics[0, 10].Value = "Ср.откл. от з.Ципфа"; // Средне-квадратичное отклонение от закона ципфа
                 }
 
                 if (MainTree != null)
@@ -172,6 +177,7 @@ namespace GUI
                     dataGridStatistics[1, 7].Value = GetDifferentWords();
                     dataGridStatistics[1, 8].Value = GetProcessedFiles();
                     dataGridStatistics[1, 9].Value = GetTotalProcessingTime();
+                    dataGridStatistics[1, 10].Value = GetAverange();
                 }
                 else
                 {
@@ -240,7 +246,7 @@ namespace GUI
             {
                 Func<int, int> Xvisualization = x => x;
                 Func<double, double> Yvisualization = y => y;// Math.Pow(y, 1.0 / 2.5);
-                double Dispersion = 0;
+                Averange = 0;
                 if (chart.Visible)
                 {
                     listBoxWords.Items.Clear();
@@ -272,7 +278,9 @@ namespace GUI
                         chart.Series[0].Points.AddXY(i, Yvisualization(y1));
                         chart.Series[1].Points.AddXY(i, Yvisualization(y2));
                         listBoxWords.Items.Add($"{i}) {chartdata[i - 1]} {Environment.NewLine}");
-                        Dispersion += (y1 - y2) * (y1 - y2) / chartdata.Count;
+                        var absdiff = (y1 - y2);
+                        var reldiff = absdiff / Math.Max(y1, y2);
+                        Averange += reldiff / chartdata.Count;
                     }
                 }
             }));
@@ -1234,6 +1242,16 @@ namespace GUI
         {
             return Downloader.StartDownloadString("https://ru.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&pageids=" + id.Id + "&exlimit=1&explaintext=1&exsectionformat=plain");
         }
+        [Obsolete]
+        private Guid WikiStartGettingTextById(IEnumerable<ArticleHeadersInfo> ids)
+        {
+            /*
+             * How many extracts to return. (Multiple extracts can only be returned if exintro is set to true.)
+No more than 20 (20 for bots) allowed. Enter max to use the maximum limit.
+*/
+            var idslist = String.Join("\x7C", ids.ToArray().Select(id => id.Id));
+            return Downloader.StartDownloadString("https://ru.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&pageids=" + idslist + "&exlimit=5&explaintext=1&exsectionformat=plain");
+        }
         private string WikiFinishGettingTextById(Guid guid)
         {
             try
@@ -1246,6 +1264,22 @@ namespace GUI
             catch
             {
                 return "";
+            }
+        }
+        [Obsolete]
+        private string[] WikiFinishGettingTextByIds(Guid guid)
+        {
+            try
+            {
+                var d = Downloader.WaitForDownloaded(guid);
+                var dd = (JObject)Newtonsoft.Json.JsonConvert.DeserializeObject(d);
+                var c = dd.Last.Last.Last.Last.Children();//.Last.Last.Last.Last.ToString();
+                var f = c.Select(s => s.Last.Last.Last.ToString());
+                return f.ToArray();
+            }
+            catch
+            {
+                return null;
             }
         }
         private ArticleHeadersInfo[] WikiGetRandomTitles(byte Count)
