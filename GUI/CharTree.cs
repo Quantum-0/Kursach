@@ -43,6 +43,40 @@ namespace CharTrees
 
             return new WordCountPair() { Word = arr[0].Substring(0, arr[0].Length - 1), Count = int.Parse(arr[1]) };
         }
+
+        static public List<WordCountPair> Sort(IEnumerable<WordCountPair> WCPs, int Count = -1)
+        {
+            if (Count == -1)
+                Count = WCPs.Count();
+
+            var On2 = /*WCPs.Count() * */Count;
+            var Onlogn = /*WCPs.Count() * */Math.Log(WCPs.Count());
+            if (On2 > Onlogn)
+            {
+                var Result = WCPs.ToList();
+                Result.Sort();
+                return Result;
+            }
+            else // SelectionSort
+            {
+                WordCountPair[] Result = WCPs.ToArray();
+                WordCountPair Temp;
+                int BiggestIndex, i, j;
+                for (i = 0; i < Count; i++)
+                {
+                    BiggestIndex = i;
+                    for (j = i; j < Result.Length; j++)
+                    {
+                        if (Result[j].Count > Result[BiggestIndex].Count)
+                            BiggestIndex = j;
+                    }
+                    Temp = Result[i];
+                    Result[i] = Result[BiggestIndex];
+                    Result[BiggestIndex] = Temp;
+                }
+                return Result.Take(Count).ToList();
+            }
+        }
     }
 
     //public class NotSuffixTree
