@@ -349,23 +349,36 @@ namespace GUI
             NewFile();
             RefreshAll();
         }
-        private void AppendFile_Click(object sender, EventArgs e)
+        private async void AppendFile_Click(object sender, EventArgs e)
         {
             openDictDialog.Multiselect = true;
             if (openDictDialog.ShowDialog() != DialogResult.OK)
                 return;
             openDictDialog.Multiselect = false;
-            foreach (var item in openDictDialog.FileNames)
+            Log("Чтение файлов..");
+            UpdateStatusStrip(0, "Открытие файлов..");
+            await Task.Run(() =>
             {
-                var tr = TreeWorker.LoadTreeFromFile(item);
-                MainTree.AppendTree(tr);
-            }
+                var trs = new CharTree[openDictDialog.FileNames.Length];
+                Parallel.For(0, trs.Length, i =>
+                {
+                    trs[i] = TreeWorker.LoadTreeFromFile(openDictDialog.FileNames[i]);
+                });
+                Log("Добавление к дереву..");
+                UpdateStatusStrip(50);
+                for (int i = 0; i < trs.Length; i++)
+                {
+                    MainTree.AppendTree(trs[i]);
+                    UpdateStatusStrip(50 + (int)(50f*i/trs.Length));
+                }
+            });
             if (openDictDialog.FileNames.Length == 1)
                 Log("Словарь дополнен из другого словаря");
             else
                 Log("Словарь дополнен из других словарей");
             FileChanged = true;
             RefreshAll();
+            UpdateStatusStrip(100, "Выбранные словари добавлены в текущий");
         }
 
         // UI для открытия/сохранения словарей
