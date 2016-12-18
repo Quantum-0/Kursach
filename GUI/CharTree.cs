@@ -55,7 +55,7 @@ namespace CharTrees
             {
                 var Result = WCPs.ToList();
                 Result.Sort();
-                return Result;
+                return Result.Take(Count).ToList();
             }
             else // SelectionSort
             {

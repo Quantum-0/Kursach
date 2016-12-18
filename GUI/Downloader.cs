@@ -50,7 +50,6 @@ namespace GUI
                 }
                 if (!Processing)
                     Task.Run((Action)DownloadFile);
-                //Task.Run((Action)StartProcessing);
 
                 Processing = true;
                 return guid;

@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.dataGridStatistics = new System.Windows.Forms.DataGridView();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -73,6 +73,7 @@
             this.textBoxLog = new System.Windows.Forms.TextBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.listBoxWords = new System.Windows.Forms.ListBox();
+            this.обработатьNСтатейToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridStatistics)).BeginInit();
             this.menuStrip.SuspendLayout();
@@ -93,35 +94,35 @@
             this.chart.BackHatchStyle = System.Windows.Forms.DataVisualization.Charting.ChartHatchStyle.LightUpwardDiagonal;
             this.chart.BorderlineColor = System.Drawing.Color.Black;
             this.chart.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
-            chartArea1.Area3DStyle.Inclination = 10;
-            chartArea1.Area3DStyle.IsRightAngleAxes = false;
-            chartArea1.Area3DStyle.LightStyle = System.Windows.Forms.DataVisualization.Charting.LightStyle.Realistic;
-            chartArea1.Area3DStyle.Perspective = 1;
-            chartArea1.Area3DStyle.Rotation = 8;
-            chartArea1.Area3DStyle.WallWidth = 3;
-            chartArea1.Name = "ChartArea1";
-            this.chart.ChartAreas.Add(chartArea1);
+            chartArea2.Area3DStyle.Inclination = 10;
+            chartArea2.Area3DStyle.IsRightAngleAxes = false;
+            chartArea2.Area3DStyle.LightStyle = System.Windows.Forms.DataVisualization.Charting.LightStyle.Realistic;
+            chartArea2.Area3DStyle.Perspective = 1;
+            chartArea2.Area3DStyle.Rotation = 8;
+            chartArea2.Area3DStyle.WallWidth = 3;
+            chartArea2.Name = "ChartArea1";
+            this.chart.ChartAreas.Add(chartArea2);
             this.chart.Location = new System.Drawing.Point(280, 3);
             this.chart.Name = "chart";
             this.chart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
             this.chart.PaletteCustomColors = new System.Drawing.Color[] {
         System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))))};
-            series1.BorderColor = System.Drawing.Color.Black;
-            series1.BorderWidth = 2;
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "SeriesValues";
-            series1.ShadowColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            series1.ShadowOffset = 4;
-            series2.BorderColor = System.Drawing.Color.Lime;
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
-            series2.Name = "SeriesIdeal";
-            series2.ShadowColor = System.Drawing.Color.Gainsboro;
-            series2.ShadowOffset = 4;
-            series2.YValuesPerPoint = 4;
-            this.chart.Series.Add(series1);
-            this.chart.Series.Add(series2);
+            series3.BorderColor = System.Drawing.Color.Black;
+            series3.BorderWidth = 2;
+            series3.ChartArea = "ChartArea1";
+            series3.Legend = "Legend1";
+            series3.Name = "SeriesValues";
+            series3.ShadowColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            series3.ShadowOffset = 4;
+            series4.BorderColor = System.Drawing.Color.Lime;
+            series4.ChartArea = "ChartArea1";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.SplineArea;
+            series4.Name = "SeriesIdeal";
+            series4.ShadowColor = System.Drawing.Color.Gainsboro;
+            series4.ShadowOffset = 4;
+            series4.YValuesPerPoint = 4;
+            this.chart.Series.Add(series3);
+            this.chart.Series.Add(series4);
             this.chart.Size = new System.Drawing.Size(400, 127);
             this.chart.TabIndex = 0;
             this.chart.MouseLeave += new System.EventHandler(this.chart_MouseLeave);
@@ -262,7 +263,8 @@
             // 
             this.wikipediaToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.обработатьСлучайнуюСтатьюToolStripMenuItem,
-            this.запуститьОбработкуToolStripMenuItem});
+            this.запуститьОбработкуToolStripMenuItem,
+            this.обработатьNСтатейToolStripMenuItem});
             this.wikipediaToolStripMenuItem.Name = "wikipediaToolStripMenuItem";
             this.wikipediaToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.wikipediaToolStripMenuItem.Text = "Wikipedia";
@@ -511,6 +513,13 @@
             this.listBoxWords.Size = new System.Drawing.Size(200, 173);
             this.listBoxWords.TabIndex = 12;
             // 
+            // обработатьNСтатейToolStripMenuItem
+            // 
+            this.обработатьNСтатейToolStripMenuItem.Name = "обработатьNСтатейToolStripMenuItem";
+            this.обработатьNСтатейToolStripMenuItem.Size = new System.Drawing.Size(291, 22);
+            this.обработатьNСтатейToolStripMenuItem.Text = "Обработать N статей";
+            this.обработатьNСтатейToolStripMenuItem.Click += new System.EventHandler(this.обработатьNСтатейToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -585,6 +594,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
         private System.Windows.Forms.ListBox listBoxWords;
         private System.Windows.Forms.ToolStripMenuItem отображатьСписокСловToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem обработатьNСтатейToolStripMenuItem;
     }
 }
 

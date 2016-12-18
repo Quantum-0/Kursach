@@ -9,3 +9,4 @@ F:\Cloud\То што я деляль\Код\C#\Курсач (3 курс)\GUI\obj
 F:\Cloud\То што я деляль\Код\C#\Курсач (3 курс)\GUI\obj\Debug\GUI.pdb
 F:\Cloud\То што я деляль\Код\C#\Курсач (3 курс)\GUI\bin\Debug\Newtonsoft.Json.dll
 F:\Cloud\То што я деляль\Код\C#\Курсач (3 курс)\GUI\bin\Debug\Newtonsoft.Json.xml
+F:\Cloud\То што я деляль\Код\C#\Курсач (3 курс)\GUI\obj\Debug\GUI.FormInputPagesCount.resources
