@@ -332,21 +332,21 @@ namespace GUI
         }
 
         // Обработчики нажатий кнопок в вернем меню
-        private void OpenFile_Click(object sender, EventArgs e)
+        private async void OpenFile_Click(object sender, EventArgs e)
         {
-            OpenFile();
+            await OpenFile();
         }
-        private void SaveFile_Click(object sender, EventArgs e)
+        private async void SaveFile_Click(object sender, EventArgs e)
         {
-            SaveFile();
+            await SaveFile();
         }
-        private void SaveAsFile_Click(object sender, EventArgs e)
+        private async void SaveAsFile_Click(object sender, EventArgs e)
         {
-            SaveAsFile();
+            await SaveAsFile();
         }
-        private void NewFile_Click(object sender, EventArgs e)
+        private async void NewFile_Click(object sender, EventArgs e)
         {
-            NewFile();
+            await NewFile();
             RefreshAll();
         }
         private async void AppendFile_Click(object sender, EventArgs e)
@@ -382,7 +382,7 @@ namespace GUI
         }
 
         // UI для открытия/сохранения словарей
-        private bool NewFile()
+        private async Task<bool> NewFile()
         {
             if (!FileChanged)
             {
@@ -410,7 +410,7 @@ namespace GUI
                 }
                 else //res == Yes
                 {
-                    if (SaveFile())
+                    if (await SaveFile())
                     {
                         MainTree = new SyncCharTree();
                         CurrentFile = String.Empty;
@@ -424,12 +424,12 @@ namespace GUI
                 }
             }
         }
-        private bool OpenFile()
+        private async Task<bool> OpenFile()
         {
             if (!FileChanged)
             {
                 if (openDictDialog.ShowDialog() == DialogResult.OK)
-                    return JustOpen(openDictDialog.FileName);
+                    return await JustOpen(openDictDialog.FileName);
                 else
                     return false;
             }
@@ -442,16 +442,16 @@ namespace GUI
                 if (res == DialogResult.No)
                 {
                     if (openDictDialog.ShowDialog() == DialogResult.OK)
-                        return JustOpen(openDictDialog.FileName);
+                        return await JustOpen(openDictDialog.FileName);
                     else
                         return false;
                 }
                 else //res == Yes
                 {
-                    if (SaveFile())
+                    if (await SaveFile())
                     {
                         if (openDictDialog.ShowDialog() == DialogResult.OK)
-                            return JustOpen(openDictDialog.FileName);
+                            return await JustOpen(openDictDialog.FileName);
                         else
                             return false;
                     }
@@ -460,29 +460,31 @@ namespace GUI
                 }
             }
         }
-        private bool SaveAsFile()
+        private async Task<bool> SaveAsFile()
         {
             if (saveDictDialog.ShowDialog() == DialogResult.OK)
-                return JustSave(saveDictDialog.FileName);
+                return await JustSave(saveDictDialog.FileName);
             else
                 return false;
         }
-        private bool SaveFile()
+        private async Task<bool> SaveFile()
         {
             if (string.IsNullOrWhiteSpace(CurrentFile))
-                return SaveAsFile();
+                return await SaveAsFile();
             else
-                return JustSave(CurrentFile);
+                return await JustSave(CurrentFile);
         }
         private DialogResult AskForSaving()
         {
             return MessageBox.Show("Сохранить изменения в файле?", "Сохранение изменений", MessageBoxButtons.YesNoCancel);
         }
-        private bool JustOpen(string fname)
+        private async Task<bool> JustOpen(string fname)
         {
+            LockMenu(true);
             try
             {
-                MainTree = TreeWorker.LoadTreeFromFile(fname);
+                Log("Открытие файла..");
+                await Task.Run(() => { MainTree = TreeWorker.LoadTreeFromFile(fname); });
                 Log("Словарь загружен из файла");
                 RefreshAll();
                 CurrentFile = fname;
@@ -494,15 +496,18 @@ namespace GUI
                 MessageBox.Show("Не удалось открыть файл.");
                 return false;
             }
+            LockMenu(false);
             UpdateCaption();
             UpdateStatusStrip(0, "Открыт словарь " + Path.GetFileName(fname));
             return true;
         }
-        private bool JustSave(string fname)
+        private async Task<bool> JustSave(string fname)
         {
+            LockMenu(true);
             try
             {
-                TreeWorker.SaveTreeToFile(fname, MainTree);
+                Log("Сохранение в файл..");
+                await Task.Run(() => { TreeWorker.SaveTreeToFile(fname, MainTree); });
                 CurrentFile = fname;
                 FileChanged = false;
                 Log("Словарь сохранён в файл");
@@ -512,6 +517,7 @@ namespace GUI
                 MessageBox.Show("Не удалось сохранить файл.");
                 return false;
             }
+            LockMenu(false);
             UpdateCaption();
             UpdateStatusStrip(0, "Словарь " + Path.GetFileName(fname) + " сохранён");
             return true;
@@ -685,7 +691,7 @@ namespace GUI
                 ProcessRandomPages(Convert.ToByte(dialog.numericUpDown1.Value), false);
             }
         }
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (ProcessingFiles > 0)
             {
@@ -702,7 +708,7 @@ namespace GUI
                 return;
 
             if (dr == DialogResult.Yes)
-                e.Cancel = !SaveFile();
+                e.Cancel = !await SaveFile();
             else
                 e.Cancel = true;
         }
