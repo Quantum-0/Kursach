@@ -241,8 +241,8 @@ namespace GUI
         }
         private void RefreshChart()
         {
-            Log("Обновление графика и списка слов");
-            this.Invoke((Action)(() =>
+            Log("Обновление графика и списка слов..");
+            this.Invoke((Action)(async () =>
             {
                 Func<int, int> Xvisualization = x => x;
                 Func<double, double> Yvisualization = y => y;// Math.Pow(y, 1.0 / 2.5);
@@ -253,10 +253,8 @@ namespace GUI
                     Words.Clear();
                     chart.Series[0].Points.Clear();
                     chart.Series[1].Points.Clear();
-                    var list = MainTree.Export();
-                    //list.Sort();
-                    list = WordCountPair.Sort(list, 100);
-                    var maxX = Math.Min(list.Count, 100);// Convert.ToInt32(Math.Floor(Math.Pow(list.Count, 1d / 2)));
+                    var list = await Task.Run(() => { return WordCountPair.Sort(MainTree.Export(), 100); });
+                    var maxX = Math.Min(list.Count, 100);
                     var chartdata = new List<WordCountPair>();
                     for (int i = 0; i < maxX; i++)
                     {
