@@ -22,7 +22,6 @@ namespace GUI
          * TODO:
          * ловить эксепшн в скачивании
          * WriteОтчёт <= RefreshAll? ===> куча циферок всяких
-         * Блокировать возможность работы со словарём в меню пока идт обработка
          * Tree Files Merging (Reduce)
          */
 
@@ -30,10 +29,6 @@ namespace GUI
         public string CurrentFile;
         public bool FileChanged;
         private const string Caption = "Курсач";
-        public float ReadingSpeed;
-        public float ProcessingSpeed;
-        public long ProcessingTime;
-        public byte ProcessingFiles;
         public bool AbortCalculating = false;
         public ulong LTProcessedChars;
         public ulong LTProcessedWords;
@@ -44,7 +39,7 @@ namespace GUI
         {
             // ReadingSpeed - скорость чтения, байт/мс
             // ReadingSpeed * 1000 / 1024 - кб/с
-            var kbps = ReadingSpeed * 1000 / 1024;
+            var kbps = ProcessingEntitiesInfo.ReadingSpeed * 1000 / 1024;
             if (kbps > 512)
                 return (kbps / 1024).ToString("F2") + " Мб/с";
             else
@@ -53,7 +48,7 @@ namespace GUI
         public string GetMidReadingSpeed()
         {
             //var MidReadingSpeed = (LTProcessedChars != 0 ? LTProcessedChars : MainTree.ProcessedChars) / (1f + MainTree.ProcessingTime + Convert.ToUInt64(ProcessingTime));
-            var MidReadingSpeed = (LTProcessedChars + MainTree.ProcessedChars) / (1f + MainTree.ProcessingTime + Convert.ToUInt64(ProcessingTime));
+            var MidReadingSpeed = (LTProcessedChars + MainTree.ProcessedChars) / (1f + MainTree.ProcessingTime + ProcessingEntitiesInfo.ProcessingTime);
             var kbps = MidReadingSpeed * 1000 / 1024;
             if (kbps > 512)
                 return (kbps / 1024).ToString("F2") + " Мб/с";
@@ -67,7 +62,7 @@ namespace GUI
         public string GetProcessingSpeed()
         {
             // ProcessingSpeed - слов/мс
-            var wps = ProcessingSpeed * 1000;
+            var wps = ProcessingEntitiesInfo.ProcessingSpeed * 1000;
             if (wps > 5000)
                 return (wps / 1000).ToString("F1") + " тыс.слов/сек";
             else
@@ -75,7 +70,7 @@ namespace GUI
         }
         public string GetMidProcessingSpeed()
         {
-            var MidProcessingSpeed = (float)(LTProcessedWords != 0 ? LTProcessedWords : MainTree.ProcessedWords) / (1 + MainTree.ProcessingTime + Convert.ToUInt64(ProcessingTime));
+            var MidProcessingSpeed = (float)(LTProcessedWords != 0 ? LTProcessedWords : MainTree.ProcessedWords) / (1 + MainTree.ProcessingTime + ProcessingEntitiesInfo.ProcessingTime);
             var wps = MidProcessingSpeed * 1000;
             if (wps > 5000)
                 return (wps / 1000).ToString("F1") + " тыс.слов/сек";
@@ -84,7 +79,7 @@ namespace GUI
         }
         public string GetProcessedFiles()
         {
-            return MainTree.FilesProcessed + " завершено, " + ProcessingFiles + " в обработке";
+            return MainTree.FilesProcessed + " завершено, " + ProcessingEntitiesInfo.Count + " в обработке";
         }
         public string GetProcessedBytes()
         {
@@ -120,7 +115,7 @@ namespace GUI
         }
         public string GetTotalProcessingTime()
         {
-            return ((MainTree.ProcessingTime + Convert.ToUInt64(ProcessingTime)) / 1000f).ToString("F1") + " сек";
+            return ((MainTree.ProcessingTime + ProcessingEntitiesInfo.ProcessingTime) / 1000f).ToString("F1") + " сек";
         }
         public string GetAverange()
         {
@@ -286,7 +281,7 @@ namespace GUI
         private void RefreshAll()
         {
             RefreshStatistics();
-            RefreshFilesStats();
+            RefreshFilesStats(ProcessingEntitiesInfo.ProcessingEntities);
             RefreshChart();
         }
         private void Log(string Text)
@@ -691,7 +686,7 @@ namespace GUI
         }
         private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (ProcessingFiles > 0)
+            if (ProcessingEntitiesInfo.Count > 0)
             {
                 MessageBox.Show("Невозможно прервать пока выполняется обработка", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 e.Cancel = true;
@@ -734,7 +729,6 @@ namespace GUI
             var BeforeDiffWords = MainTree.DifferentWords;
             FileChanged = true;
             UpdateCaption();
-            var CommonSW = new Stopwatch();
             var TotalSize = Files.Sum(f => f.Length);
             if (Files.Length > 1)
                 UpdateStatusStrip(0, string.Format("Обработка {0} файлов ({1} Мб) из директории: {2}",
@@ -743,29 +737,16 @@ namespace GUI
                 UpdateStatusStrip(0, "Обработка файла: " + Files[0].Name);
 
             // Локальная инициализация
-            var LocalSW = new Stopwatch[Files.Length];
-            /*var ShortFNames = Files.Select(fi => fi.Name).ToArray();
-            var Percents = new int[Files.Length];
-            var ReadingSpeed = new float[Files.Length];
-            var ProcessingSpeed = new float[Files.Length];
-            var States = new ProcessingState[Files.Length];*/
-            var Entities = new List<ProcessingEntity>();
-            for (int i = 0; i < Files.Length; i++)
-            {
-                Entities.Add(new ProcessingEntity(Files[i].Name));
-            }
+            var Entities = ProcessingEntity.CreateFiles(Files).ToList();
             var Streams = new StreamReader[Files.Length];
             var LocalTrees = new CharTree[Files.Length];
 
             // Параллельная обработка всех файлов
             Log("Начало параллельной обработки файлов");
-            CommonSW.Start();
             Parallel.For(0, Files.Length, i =>
             {
                 // Инициализация
-                ProcessingFiles++;
                 Entities[i].State = ProcessingState.Processing;
-                //Log($"- Начало обработки файла {ShortFNames[i]}");
                 long iteration = 0;
                 long lastiterationsvalue = 0;
                 long lastswvalue = 0;
@@ -773,9 +754,6 @@ namespace GUI
                 var LocalTree = Files.Length == 1 ? MainTree : new SyncCharTree();
                 LocalTrees[i] = LocalTree;
                 var Word = new StringBuilder();
-                //int WordsFound = 0;
-                LocalSW[i] = new Stopwatch();
-                LocalSW[i].Start();
 
                 using (Streams[i] = new StreamReader(Files[i].FullName))
                 {
@@ -790,9 +768,9 @@ namespace GUI
                         {
                             // Обновление локальных данных
                             Entities[i].Progress += 5;
-                            Entities[i].ReadingSpeed = (float)(iteration - lastiterationsvalue) / (LocalSW[i].ElapsedMilliseconds - lastswvalue);
-                            Entities[i].ProcessingSpeed = (float)(Entities[i].ProcessedWords - lastwordsvalue) / (LocalSW[i].ElapsedMilliseconds - lastswvalue);
-                            lastswvalue = LocalSW[i].ElapsedMilliseconds;
+                            Entities[i].ReadingSpeed = (float)(iteration - lastiterationsvalue) / (Entities[i].ProcessingTime - lastswvalue);
+                            Entities[i].ProcessingSpeed = (float)(Entities[i].ProcessedWords - lastwordsvalue) / (Entities[i].ProcessingTime - lastswvalue);
+                            lastswvalue = Entities[i].ProcessingTime;
                             lastiterationsvalue = iteration;
                             lastwordsvalue = Entities[i].ProcessedWords;
 
@@ -807,15 +785,9 @@ namespace GUI
                                     this.LTProcessedWords += LocalTrees[j].ProcessedWords;
                                 }
                             }
-                            this.ReadingSpeed = Entities.Sum(e => e.ReadingSpeed);// ReadingSpeed.Sum();
-                            this.ProcessingSpeed = Entities.Sum(e => e.ProcessingSpeed);
-                            this.ProcessingTime = CommonSW.ElapsedMilliseconds;
-                            UpdateStatusStrip(Entities.Sum(e => e.Progress) / Files.Length);
-                            this.Invoke((Action)(() =>
-                            {
-                                RefreshStatistics();
-                                RefreshFilesStats(Entities);
-                            }));
+                            UpdateStatusStrip(ProcessingEntitiesInfo.Progress);
+                            RefreshStatistics();
+                            RefreshFilesStats(Entities);
                         }
 
                         // Обработка считанных данных
@@ -837,34 +809,21 @@ namespace GUI
                         }
                     } // Прерывание выполнения при достижении конца потока, либо при прерывании выполнения
                     while (!Streams[i].EndOfStream && !AbortCalculating);
-                    //Percents[i] = 100;
-                    //ReadingSpeed[i] = 0;
-                    //ProcessingSpeed[i] = 0;
                 }
-                //Log($"- Файл {ShortFNames[i]} обработан");
-
                 // Окончание обработки, объединение с основным деревом
                 Entities[i].State = ProcessingState.Merging;
-                // ЗАЛОЧИТЬ ДЕРЕВО НАДО
                 if (Files.Length != 1)
                     MainTree.AppendTree(LocalTree);
                 LocalTree = null;
-                ProcessingFiles--;
                 MainTree.FilesProcessed++;
                 Entities[i].State = ProcessingState.Finished;
-                LocalSW[i].Stop();
-                LocalSW[i].Reset();
             });
-            this.ReadingSpeed = 0;
-            this.ProcessingSpeed = 0;
             LTProcessedChars = 0;
             LTProcessedWords = 0;
-            CommonSW.Stop();
-            ProcessingTime = 0;
-            MainTree.ProcessingTime += Convert.ToUInt64(CommonSW.ElapsedMilliseconds);
+            MainTree.ProcessingTime += ProcessingEntitiesInfo.ProcessingTime;
 
             // Вывод статуса внизу
-            if (AbortCalculating && ProcessingFiles == 0)
+            if (AbortCalculating && ProcessingEntitiesInfo.Count == 0)
             {
                 UpdateStatusStrip(100, "Обработка прервана");
                 Log("Параллельная обработка была прервана");
@@ -889,13 +848,9 @@ namespace GUI
 
             // Обновление интерфейса
             LockMenu(false);
-            RefreshChart();
-            RefreshStatistics();
-            RefreshFilesStats(Entities);
+            RefreshAll();
 
             // Чистка мусора
-            CommonSW = null;
-            LocalSW = null;
             Entities = null;
             Streams = null;
             GC.Collect(1);
@@ -909,7 +864,6 @@ namespace GUI
                 Log("Начало обработки случайно статьи с Википедии");
                 var BeforeDiffWords = MainTree.DifferentWords;
                 FileChanged = true;
-                ProcessingFiles++;
                 UpdateCaption();
                 UpdateStatusStrip(0, "Загрузка случайной статьи");
                 var ReadingSpeed = new float[1];
@@ -918,7 +872,6 @@ namespace GUI
                 States[0] = ProcessingState.Downloading;
                 StringReader Stream;
                 var Percents = new int[1];
-                var CommonSW = new Stopwatch();
                 RefreshFilesStats(new string[] { "???" }, new int[] { 0 }, States, Percents, ReadingSpeed, ProcessingSpeed);
                 Log("Скачивание..");
 
@@ -934,12 +887,11 @@ namespace GUI
                 RefreshFilesStats(new string[] { Article.Item1 }, new int[] { TotalSize }, States, Percents, ReadingSpeed, ProcessingSpeed);
                 Stream = new StringReader(Article.Item2);
                 UpdateStatusStrip(0, "Обработка содержимого статьи \"" + Article.Item1 + "\"");
-                CommonSW.Start();
 
                 // Инициализация
                 long iteration = 0;
                 long lastiterationsvalue = 0;
-                long lastswvalue = 0;
+                ulong lastswvalue = 0;
                 int lastwordsvalue = 0;
                 //var LocalTree = Files.Length == 1 ? MainTree : new SyncCharTree();
                 var LocalTree = MainTree;
@@ -958,19 +910,16 @@ namespace GUI
                     {
                         // Обновление локальных данных
                         Percents[0] += 5;
-                        ReadingSpeed[0] = (float)(iteration - lastiterationsvalue) / (CommonSW.ElapsedMilliseconds - lastswvalue);
-                        ProcessingSpeed[0] = (float)(WordsFound - lastwordsvalue) / (CommonSW.ElapsedMilliseconds - lastswvalue);
-                        lastswvalue = CommonSW.ElapsedMilliseconds;
+                        ReadingSpeed[0] = (float)(iteration - lastiterationsvalue) / (ProcessingEntitiesInfo.ProcessingTime - lastswvalue);
+                        ProcessingSpeed[0] = (float)(WordsFound - lastwordsvalue) / (ProcessingEntitiesInfo.ProcessingTime - lastswvalue);
+                        lastswvalue = ProcessingEntitiesInfo.ProcessingTime;
                         lastiterationsvalue = iteration;
                         lastwordsvalue = WordsFound;
 
                         // Обновление глобальных данных
                         this.LTProcessedChars = LocalTree.ProcessedChars;
                         this.LTProcessedWords = LocalTree.ProcessedWords;
-
-                        this.ReadingSpeed = ReadingSpeed.Sum();
-                        this.ProcessingSpeed = ProcessingSpeed.Sum();
-                        this.ProcessingTime = CommonSW.ElapsedMilliseconds;
+                        
                         UpdateStatusStrip(Percents.Sum() / 1);
                         this.Invoke((Action)(() =>
                         {
@@ -1005,16 +954,11 @@ namespace GUI
                 States[0] = ProcessingState.Merging;
                 //if (Files.Length != 1)
                 //  MainTree.AppendTree(LocalTree);
-                ProcessingFiles--;
                 MainTree.FilesProcessed++;
                 States[0] = ProcessingState.Finished;
-                this.ReadingSpeed = 0;
-                this.ProcessingSpeed = 0;
                 LTProcessedChars = 0;
                 LTProcessedWords = 0;
-                CommonSW.Stop();
-                ProcessingTime = 0;
-                MainTree.ProcessingTime += Convert.ToUInt64(CommonSW.ElapsedMilliseconds);
+                MainTree.ProcessingTime += ProcessingEntitiesInfo.ProcessingTime;
 
                 // Вывод статуса внизу
                 if (AbortCalculating)
@@ -1043,7 +987,6 @@ namespace GUI
                 RefreshFilesStats(new string[] { Article.Item1 }, new int[] { TotalSize }, States, Percents, ReadingSpeed, ProcessingSpeed);
 
                 // Чистка мусора
-                CommonSW = null;
                 Percents = null;
                 ReadingSpeed = null;
                 ProcessingSpeed = null;
@@ -1072,28 +1015,13 @@ namespace GUI
                     }
                     FileChanged = true;
                     UpdateCaption();
-                    var CommonSW = new Stopwatch();
 
                     // Локальная инициализация
-                    /*var Percents = new int[Count];
-                    var States = new ProcessingState[Count];
-                    var Lenghts = new int[Count];
-                    var ReadingSpeed = new float[Count];
-                    var ProcessingSpeed = new float[Count];
-                    var ProccessedChars = new int[Count];
-                    var ProccessedWords = new int[Count];*/
-                    var LocalSW = new Stopwatch[Count];
-                    var Articles = new List<ProcessingEntity>();
-                    for (int i = 0; i < ArticleHeaders.Length; i++)
-                    {
-                        Articles.Add(new ProcessingEntity(ArticleHeaders[i]));
-                    }
-                    ProcessingFiles += (byte)Count; // Убрать эту гадость вообще и брать ProcessingFiles из ProcessingEntity static var
+                    var Articles = ProcessingEntity.CreateArticles(ArticleHeaders).ToList();
                     RefreshFilesStats(Articles);
-                    CommonSW.Start();
                     
                     Log("Список статей загружен, запуск параллельного скачивания и обработки текстов");
-                    Parallel.For(0, (int)Count, i =>
+                    Parallel.For(0, Count, i =>
                     {
                         if (AbortCalculating)
                         {
@@ -1103,10 +1031,8 @@ namespace GUI
                         var DownloadingID = WikiStartGettingTextById(ArticleHeaders[i]);
                         Articles[i].State = ProcessingState.Downloading;
                         RefreshFilesStats(Articles);
-                        //RefreshFilesStats(ArticleHeaders.Item2, Lenghts, States, Percents, ReadingSpeed, ProcessingSpeed);
                         var Text = WikiFinishGettingTextById(DownloadingID);
-
-                        // 
+                        
                         Articles[i].Length = Text.Length;
                         Articles[i].State = ProcessingState.Processing;
                         
@@ -1115,11 +1041,8 @@ namespace GUI
                         long lastswvalue = 0;
                         int lastwordsvalue = 0;
                         var Word = new StringBuilder();
-                        LocalSW[i] = new Stopwatch();
                         RefreshFilesStats(Articles);
-                        //Refresh();
                         var Stream = new StringReader(Text);
-                        LocalSW[i].Start();
 
                         while (iteration < Text.Length && !AbortCalculating)
                         {
@@ -1127,36 +1050,21 @@ namespace GUI
                             var c = Convert.ToChar(Stream.Read());
                             iteration++;
 
-
-                            // А вообще визуализацию можно отдельным таском, а вот это всё и все эти вычисления перенести в Articles
                             // Обновление визуализации данных
                             if (iteration > Text.Length * (Articles[i].Progress + 10) / 100)
                             {
                                 // Обновление локальных данных
                                 Articles[i].Progress += 10;
-                                Articles[i].ReadingSpeed = (float)(iteration - lastiterationsvalue) / (LocalSW[i].ElapsedMilliseconds - lastswvalue);
-                                Articles[i].ProcessingSpeed = (float)(Articles[i].ProcessedWords - lastwordsvalue) / (LocalSW[i].ElapsedMilliseconds - lastswvalue);
-                                lastswvalue = LocalSW[i].ElapsedMilliseconds;
+                                Articles[i].ReadingSpeed = (float)(iteration - lastiterationsvalue) / (Articles[i].ProcessingTime - lastswvalue);
+                                Articles[i].ProcessingSpeed = (float)(Articles[i].ProcessedWords - lastwordsvalue) / (Articles[i].ProcessingTime - lastswvalue);
+                                lastswvalue = Articles[i].ProcessingTime;
                                 lastiterationsvalue = iteration;
                                 lastwordsvalue = Articles[i].ProcessedWords;
                                 Articles[i].ProcessedChars = iteration;
-                                //Articles[i].ProccessedWords = WordsFound; зочем
 
-                                // Обновление глобальных данных
-                                /*this.LTProcessedChars = 0;
-                                this.LTProcessedWords = 0;
-                                for (int j = 0; j < 100; j++)
-                                {
-                                    this.LTProcessedChars += (ulong)ProccessedChars[j];
-                                    this.LTProcessedWords += (ulong)ProccessedWords[j];
-                                }*/
-                                this.ReadingSpeed = Articles.Sum(a => a.ReadingSpeed);
-                                this.ProcessingSpeed = Articles.Sum(a => a.ProcessingSpeed);
-                                this.ProcessingTime = CommonSW.ElapsedMilliseconds;
                                 UpdateStatusStrip(Articles.Sum(a => a.Progress) / Articles.Count);
                                 RefreshStatistics();
                                 RefreshFilesStats(Articles);
-                                //Refresh();
                             }
 
                             // Обработка считанных данных
@@ -1181,32 +1089,23 @@ namespace GUI
                             }
                         }
 
-                        // Окончание обработки
-                        ProcessingFiles--;
-                        MainTree.FilesProcessed++;
+                        // Окончание обработки                        
                         if (AbortCalculating)
                             Articles[i].State = ProcessingState.Aborted;
                         else
+                        {
+                            MainTree.FilesProcessed++;
                             Articles[i].State = ProcessingState.Finished;
-                        LocalSW[i].Stop();
-                        LocalSW[i].Reset();
-                        Log($"- Обработка статьи \"{ArticleHeaders[i].Caption}\" завершена");
+                        }
                     });
                     Log("Параллельная обработка статей завершена");
-                    this.ReadingSpeed = 0;
-                    this.ProcessingSpeed = 0;
                     LTProcessedChars = 0;
                     LTProcessedWords = 0;
-                    CommonSW.Stop();
-                    ProcessingTime = 0;
-                    MainTree.ProcessingTime += Convert.ToUInt64(CommonSW.ElapsedMilliseconds);
-                    
-                    RefreshChart();
-                    RefreshStatistics();
-                    RefreshFilesStats(Articles);
+                    MainTree.ProcessingTime += ProcessingEntitiesInfo.ProcessingTime;
+
+                    RefreshAll();
 
                     // Чистка мусора
-                    CommonSW = null;
                     Articles = null;
                     GC.Collect(1);
                 }
@@ -1218,7 +1117,6 @@ namespace GUI
                     UpdateStatusStrip(100, "Обработка прервана");
                     Log("Обработка была прервана");
                     AbortCalculating = false;
-                    ProcessingFiles = 0;
                 }
                 else
                 {
