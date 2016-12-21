@@ -118,6 +118,7 @@ namespace CharTrees
     
     public abstract class CharTree
     {
+        protected object Sync = new object();
         public Node Root;
         public ulong DifferentWords;
         public ulong ProcessedWords;
@@ -137,9 +138,12 @@ namespace CharTrees
 
         public List<WordCountPair> Export()
         {
-            var Result = new List<WordCountPair>();
-            _Export(Result, String.Empty, Root);
-            return Result;
+            lock (Sync)
+            {
+                var Result = new List<WordCountPair>();
+                _Export(Result, String.Empty, Root);
+                return Result;
+            }
         }
 
         protected void _Export(List<WordCountPair> Result, string Word, Node current)
@@ -245,11 +249,14 @@ namespace CharTrees
 
         public override void AppendTree(CharTree Tree)
         {
-            this.FilesProcessed += Tree.FilesProcessed;
-            this.ProcessedChars += Tree.ProcessedChars;
-            this.ProcessedWords += Tree.ProcessedWords;
-            this.ProcessingTime += Tree.ProcessingTime;
-            _Append(Tree.Root);
+            lock (Sync)
+            {
+                this.FilesProcessed += Tree.FilesProcessed;
+                this.ProcessedChars += Tree.ProcessedChars;
+                this.ProcessedWords += Tree.ProcessedWords;
+                this.ProcessingTime += Tree.ProcessingTime;
+                _Append(Tree.Root);
+            }
         }
 
         private void _Append(Node current, string Word = "")
