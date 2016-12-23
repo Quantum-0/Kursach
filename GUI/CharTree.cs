@@ -156,13 +156,16 @@ namespace CharTrees
             else
                 throw new ArgumentException();
 
-            foreach (var Child in Current.Childs)
+            lock (Sync)
             {
-                if (Child.Count > 0)
-                    Result.Add(new WordCountPair() { Word = Word + Child.Char, Count = Child.Count });
+                foreach (var Child in Current.Childs)
+                {
+                    if (Child.Count > 0)
+                        Result.Add(new WordCountPair() { Word = Word + Child.Char, Count = Child.Count });
 
-                if (Child.Childs.Count > 0)
-                    _Export(Result, Word + Child.Char, Child);
+                    if (Child.Childs.Count > 0)
+                        _Export(Result, Word + Child.Char, Child);
+                }
             }
         }
     }
@@ -218,22 +221,27 @@ namespace CharTrees
                 if (NotInitialized)
                 {
                     var New = new SynchronousNode(Word[i]);
-                    Current.Childs.Add(New);
+                    lock (Sync)
+                        Current.Childs.Add(New);
                     Current = New;
                 }
                 else
                 {
-
-                    if (!Current.Childs.Exists(n => n.Char == Word[i]))
+                    bool Condition;
+                    lock (Sync)
+                        Condition = !Current.Childs.Exists(n => n.Char == Word[i]);
+                    if (Condition)
                     {
                         NotInitialized = true;
                         var New = new SynchronousNode(Word[i]);
-                        Current.Childs.Add(New);
+                        lock (Sync)
+                            Current.Childs.Add(New);
                         Current = New;
                     }
                     else
                     {
-                        Current = Current.Childs.Find(n => n.Char == Word[i]);
+                        lock (Sync)
+                            Current = Current.Childs.Find(n => n.Char == Word[i]);
                     }
                 }
             }
