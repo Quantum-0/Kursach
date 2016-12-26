@@ -79,15 +79,6 @@ namespace CharTrees
         }
     }
 
-    //public class NotSuffixTree
-    //{
-    //            public void Dispose()
-    //    {
-    //        // Это в кинуть финализатор, а dispose пусть плавненько выходит из цикла
-    //        //Adders.ForEach(a => a.Abort());
-    //    }
-    //}
-
     public abstract class Node
     {
         public char Char;
@@ -116,7 +107,7 @@ namespace CharTrees
         }
     }
     
-    public abstract class CharTree
+    public abstract class PrefixTree
     {
         protected object Sync = new object();
         public Node Root;
@@ -126,11 +117,11 @@ namespace CharTrees
         public ulong ProcessingTime;
         public ulong FilesProcessed;
 
-        public CharTree()
+        public PrefixTree()
         {
         }
 
-        public abstract void AppendTree(CharTree Tree);
+        public abstract void AppendTree(PrefixTree Tree);
 
         public abstract void CreateBranch(WordCountPair wcp);
 
@@ -170,9 +161,9 @@ namespace CharTrees
         }
     }
 
-    public class SyncCharTree : CharTree
+    public class SyncPrefixTree : PrefixTree
     {
-        public SyncCharTree()
+        public SyncPrefixTree()
         {
             Root = new SynchronousNode('\0');
         }
@@ -255,7 +246,7 @@ namespace CharTrees
             return true;
         }
 
-        public override void AppendTree(CharTree Tree)
+        public override void AppendTree(PrefixTree Tree)
         {
             lock (Sync)
             {
@@ -287,7 +278,7 @@ namespace CharTrees
         }
     }
 
-    public class ASyncCharTree : CharTree
+    public class AsyncPrefixTree : PrefixTree
     {
         ConcurrentQueue<string> WordsToAdd = new ConcurrentQueue<string>();
         Thread Adder;
@@ -302,7 +293,7 @@ namespace CharTrees
 
         private static void WorkWithWords(object oTree)
         {
-            ASyncCharTree Tree = (ASyncCharTree)oTree;
+            AsyncPrefixTree Tree = (AsyncPrefixTree)oTree;
             while (Tree != null)
             {
                 if (Tree.WordsToAdd.Count > 0)
@@ -322,7 +313,7 @@ namespace CharTrees
             }
         }
 
-        public ASyncCharTree()
+        public AsyncPrefixTree()
         {
             Root = new SynchronousNode('\0');
             Adder = new Thread(WorkWithWords);
@@ -394,7 +385,7 @@ namespace CharTrees
             Current.Count++;
         }
 
-        public override void AppendTree(CharTree Tree)
+        public override void AppendTree(PrefixTree Tree)
         {
             throw new NotImplementedException();
         }

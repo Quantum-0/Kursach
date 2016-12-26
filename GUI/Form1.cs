@@ -19,13 +19,21 @@ namespace GUI
     public partial class MainForm : Form
     {
         /*
-         * TODO:
-         * ловить эксепшн в скачивании
-         * WriteОтчёт <= RefreshAll? ===> куча циферок всяких
-         * Tree Files Merging (Reduce)
+         * ================================== TODO ===================================
+         * Tree Files Merging (объединение 2 или более достаточно больших файлов,
+         * не помещая их в ОЗУ целиком, используя MergeSort)
+         * 
+         * лематизация (http://lemmatise.ijs.si/Software/Version3,
+         * http://www.solarix.ru/for_developers/api/lemmatization.shtml)
+         * 
+         * бот (Telegram-bot, хранящий список subscribers (комманды /subscribe & /unsubscribe),
+         * периодически высылающий подписчикам статистику обработки данных и изображение графика)
+         * 
+         * бэкап (каждые N обработанных кб/мб словарь автоматически сохраняется во временный файл,
+         * использующийся для восстановления в случае если внезапно всё падает)
          */
 
-        public CharTree MainTree;
+        public PrefixTree MainTree;
         public string CurrentFile;
         public bool FileChanged;
         private const string Caption = "Курсач";
@@ -98,8 +106,8 @@ namespace GUI
             var kwords = (LTProcessedWords != 0? LTProcessedWords : MainTree.ProcessedWords) / 1000f;
             if (kwords < 100)
                 return kwords.ToString("F2") + " тыс.слов";
-            else if (kwords < 5000)
-                return kwords.ToString("F1") + " тыс.слов";
+            else if (kwords < 1500)
+                return Math.Round(kwords) + " тыс.слов";
             else
                 return (kwords / 1000).ToString("F2") + " млн.слов";
         }
@@ -108,14 +116,32 @@ namespace GUI
             var kwords = MainTree.DifferentWords / 1000f;
             if (kwords < 100)
                 return kwords.ToString("F2") + " тыс.слов";
-            else if (kwords < 5000)
+            else if (kwords < 700)
                 return kwords.ToString("F1") + " тыс.слов";
             else
                 return (kwords / 1000).ToString("F2") + " млн.слов";
         }
         public string GetTotalProcessingTime()
         {
-            return ((MainTree.ProcessingTime + ProcessingEntitiesInfo.ProcessingTime) / 1000f).ToString("F1") + " сек";
+            var ticks = Convert.ToInt64(TimeSpan.TicksPerMillisecond * MainTree.ProcessingTime + ProcessingEntitiesInfo.ProcessingTime);
+            var time = new TimeSpan(ticks);
+
+            if (time.TotalHours > 1)
+            {
+                return $"{Math.Floor(time.TotalHours)} ч. {time.Minutes} мин";
+            }
+            else if (time.TotalSeconds > 1000)
+            {
+                return $"{Math.Floor(time.TotalMinutes)} мин {time.Seconds} сек";
+            }
+            else if (time.TotalSeconds > 100)
+            {
+                return $"{Math.Floor(time.TotalSeconds)} сек";
+            }
+            else
+            {
+                return $"{(time.TotalMilliseconds / 1000f).ToString("F1")} сек";
+            }
         }
         public string GetAverange()
         {
@@ -131,7 +157,7 @@ namespace GUI
         {
             RefreshStatistics(true);
             UpdateCaption();
-            MainTree = new SyncCharTree();
+            MainTree = new SyncPrefixTree();
             var colorslist = new List<Color>();
             colorslist.Add(Color.FromArgb(192, 192, 192, 192));
             colorslist.Add(Color.FromArgb(64, Color.GreenYellow));
@@ -297,7 +323,7 @@ namespace GUI
                     int len = textBoxLog.SelectionLength;
 
                     if (textBoxLog.Text != "")
-                        textBoxLog.Text += string.Format("\r\n[{0}] {1}", DateTime.Now.ToString("HH:mm:ss.fff"), Text);
+                        textBoxLog.Text += string.Format("{2}[{0}] {1}", DateTime.Now.ToString("HH:mm:ss.fff"), Text, Environment.NewLine);
                     else
                         textBoxLog.Text += string.Format("[{0}] {1}", DateTime.Now.ToString("HH:mm:ss.fff"), Text);
 
@@ -307,7 +333,7 @@ namespace GUI
                 else
                 {
                     if (textBoxLog.Text != "")
-                        textBoxLog.AppendText(string.Format("\r\n[{0}] {1}", DateTime.Now.ToString("HH:mm:ss.fff"), Text));
+                        textBoxLog.AppendText(string.Format("{2}[{0}] {1}", DateTime.Now.ToString("HH:mm:ss.fff"), Text, Environment.NewLine));
                     else
                         textBoxLog.AppendText(string.Format("[{0}] {1}", DateTime.Now.ToString("HH:mm:ss.fff"), Text));
                 }
@@ -352,7 +378,7 @@ namespace GUI
             UpdateStatusStrip(0, "Открытие файлов..");
             await Task.Run(() =>
             {
-                var trs = new CharTree[openDictDialog.FileNames.Length];
+                var trs = new PrefixTree[openDictDialog.FileNames.Length];
                 Parallel.For(0, trs.Length, i =>
                 {
                     trs[i] = TreeWorker.LoadTreeFromFile(openDictDialog.FileNames[i]);
@@ -379,7 +405,7 @@ namespace GUI
         {
             if (!FileChanged)
             {
-                MainTree = new SyncCharTree();
+                MainTree = new SyncPrefixTree();
                 CurrentFile = String.Empty;
                 FileChanged = false;
                 UpdateCaption();
@@ -394,7 +420,7 @@ namespace GUI
 
                 if (res == DialogResult.No)
                 {
-                    MainTree = new SyncCharTree();
+                    MainTree = new SyncPrefixTree();
                     CurrentFile = String.Empty;
                     FileChanged = false;
                     UpdateCaption();
@@ -405,7 +431,7 @@ namespace GUI
                 {
                     if (await SaveFile())
                     {
-                        MainTree = new SyncCharTree();
+                        MainTree = new SyncPrefixTree();
                         CurrentFile = String.Empty;
                         FileChanged = false;
                         UpdateCaption();
@@ -739,7 +765,7 @@ namespace GUI
             // Локальная инициализация
             var Entities = ProcessingEntity.CreateFiles(Files).ToList();
             var Streams = new StreamReader[Files.Length];
-            var LocalTrees = new CharTree[Files.Length];
+            var LocalTrees = new PrefixTree[Files.Length];
 
             // Параллельная обработка всех файлов
             Log("Начало параллельной обработки файлов");
@@ -751,7 +777,7 @@ namespace GUI
                 long lastiterationsvalue = 0;
                 long lastswvalue = 0;
                 int lastwordsvalue = 0;
-                var LocalTree = Files.Length == 1 ? MainTree : new SyncCharTree();
+                var LocalTree = Files.Length == 1 ? MainTree : new SyncPrefixTree();
                 LocalTrees[i] = LocalTree;
                 var Word = new StringBuilder();
 
@@ -856,6 +882,7 @@ namespace GUI
             GC.Collect(1);
         }
 
+        [Obsolete]
         private void ProcessRandomPage()
         {
             Task.Run(() =>
@@ -881,7 +908,12 @@ namespace GUI
                 // Начало обработки
                 var Article = /*await*/ ArticleTask;
                 if (Article == null)
-                    throw new Exception("Не скачалось :с");
+                {
+                    Log("Ошибка скачивания");
+                    UpdateStatusStrip(0, "Ошибка скачивания статьи");
+                    LockMenu(false);
+                    return;
+                }
                 var TotalSize = Article.Item2.Length;
                 States[0] = ProcessingState.Processing;
                 RefreshFilesStats(new string[] { Article.Item1 }, new int[] { TotalSize }, States, Percents, ReadingSpeed, ProcessingSpeed);
@@ -1009,6 +1041,7 @@ namespace GUI
                     var ArticleHeaders = WikiGetRandomTitles(Count);
                     if (ArticleHeaders == null)
                     {
+                        Log("Ошибка загрузки, проверьте подключение к интернету");
                         UpdateStatusStrip(0, "Загрузка прервана");
                         LockMenu(false);
                         return;
@@ -1032,6 +1065,11 @@ namespace GUI
                         Articles[i].State = ProcessingState.Downloading;
                         RefreshFilesStats(Articles);
                         var Text = WikiFinishGettingTextById(DownloadingID);
+                        if (Text == null)
+                        {
+                            Articles[i].State = ProcessingState.Error;
+                            return;
+                        }
                         
                         Articles[i].Length = Text.Length;
                         Articles[i].State = ProcessingState.Processing;
@@ -1178,7 +1216,7 @@ No more than 20 (20 for bots) allowed. Enter max to use the maximum limit.
             }
             catch
             {
-                return "";
+                return null;
             }
         }
         [Obsolete]

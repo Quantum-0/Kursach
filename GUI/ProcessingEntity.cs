@@ -15,7 +15,8 @@ namespace GUI
         Processing,
         Merging,
         Finished,
-        Aborted
+        Aborted,
+        Error
     }
 
     static class ProcessingEntitiesInfo
@@ -24,30 +25,42 @@ namespace GUI
         {
             get
             {
-                return ProcessingEntities.Sum(p => p.ProcessingSpeed);
+                lock (ProcessingEntities)
+                {
+                    return ProcessingEntities.Sum(p => p.ProcessingSpeed);
+                }
             }
         }
         public static float ReadingSpeed
         {
             get
             {
-                return ProcessingEntities.Sum(p => p.ReadingSpeed);
+                lock (ProcessingEntities)
+                {
+                    return ProcessingEntities.Sum(p => p.ReadingSpeed);
+                }
             }
         }
         public static int Progress
         {
             get
             {
-                var len = ProcessingEntities.Sum(p => p.Length);
-                var pos = ProcessingEntities.Sum(p => p.ProcessedChars);
-                return Convert.ToInt32(100 * pos / len);
+                lock (ProcessingEntities)
+                {
+                    var len = ProcessingEntities.Sum(p => p.Length);
+                    var pos = ProcessingEntities.Sum(p => p.ProcessedChars);
+                    return Convert.ToInt32(100 * pos / len);
+                }
             }
         }
         public static int Count
         {
             get
             {
-                return ProcessingEntities.Count;
+                lock (ProcessingEntities)
+                {
+                    return ProcessingEntities.Count;
+                }
             }
         }
         /// <summary>
@@ -71,16 +84,22 @@ namespace GUI
         public static List<ProcessingEntity> ProcessingEntities { get; private set; } = new List<ProcessingEntity>();
         public static void _AddEntity(ProcessingEntity PE)
         {
-            if (Count == 0)
-                SW.Start();
-            ProcessingEntities.Add(PE);
-            PE.Finished += Entity_Finished;
+            lock (ProcessingEntities)
+            {
+                if (ProcessingEntities.Count == 0)
+                    SW.Start();
+                ProcessingEntities.Add(PE);
+                PE.Finished += Entity_Finished;
+            }
         }
         private static void Entity_Finished(object sender, EventArgs e)
         {
-            ProcessingEntities.Remove(sender as ProcessingEntity);
-            if (Count == 0)
-                SW.Stop();
+            lock (ProcessingEntities)
+            {
+                ProcessingEntities.Remove(sender as ProcessingEntity);
+                if (ProcessingEntities.Count == 0)
+                    SW.Stop();
+            }
         }
     }
 
@@ -174,6 +193,11 @@ namespace GUI
                             Log($"- Обработка статьи \"{Name}\" прервана");
                         else
                             Log($"- Обработка файла \"{Name}\" прервана");
+                        break;
+                    case ProcessingState.Error:
+                        if (Type == ProcessingEntityType.Article)
+                            Log($"- Ошибка скачивания статья \"{Name}\"");
+                        State = ProcessingState.Aborted;
                         break;
                     default:
                         break;

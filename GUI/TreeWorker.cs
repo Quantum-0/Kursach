@@ -10,12 +10,12 @@ namespace GUI
 {
     class TreeWorker
     {
-        public static CharTree LoadTreeFromFile(string fname)
+        public static PrefixTree LoadTreeFromFile(string fname)
         {
             using (StreamReader sr = new StreamReader(fname))
             {
                 sr.ReadLine(); sr.ReadLine();
-                CharTree tree = new SyncCharTree();
+                PrefixTree tree = new SyncPrefixTree();
                 tree.ProcessedChars = ulong.Parse(sr.ReadLine());
                 tree.ProcessedWords = ulong.Parse(sr.ReadLine());
                 sr.ReadLine();
@@ -30,7 +30,7 @@ namespace GUI
                 return tree;
             }
         }
-        public static void SaveTreeToFile(string fname, CharTree tree)
+        public static void SaveTreeToFile(string fname, PrefixTree tree)
         {
             using (StreamWriter sw = new StreamWriter(fname))
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -32,6 +33,7 @@ namespace GUI
         static bool Aborting;
         static object Sync = new object();
         
+
         public static void AbortTasks()
         {
             Aborting = true;
@@ -71,11 +73,18 @@ namespace GUI
             if (!Aborting && TimeoutSW.ElapsedMilliseconds < 30*1000)
                 return GetResultAndRemoveFromLists(guid);
             else
-                return new ResultWithTime("", 0);
+                return new ResultWithTime(null, 0);
         }
         public static string WaitForDownloaded(Guid guid)
         {
             return WaitForDownloadedWithTime(guid).Result;
+        }
+
+        public static string DownloadString(string Url)
+        {
+            WebClient wc = new WebClient();
+            var res = wc.DownloadStringTaskAsync(Url);
+            return res.Result;
         }
 
         private static ResultWithTime GetResultAndRemoveFromLists(Guid guid)
@@ -100,6 +109,7 @@ namespace GUI
                     WebClient webClient = new WebClient();
                     webClient.DownloadStringCompleted += WebClient_DownloadStringCompleted;
                     webClient.DownloadStringAsync(new Uri(Urls[CurrentTask]));
+                    //webClient.DownloadFileAsync(new Uri(Urls[CurrentTask]), Path.GetTempPath() + )
                     SWs[CurrentTask] = new Stopwatch();
                     SWs[CurrentTask].Start();
                 }
@@ -112,15 +122,14 @@ namespace GUI
 
         private static void WebClient_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
-            //if (e.Error != null)
-               //;
-            //SWs[CurrentTask].Stop();
-            Results[CurrentTask] = e.Result;
+            if (e.Error != null)
+                Results[CurrentTask] = null;
+            else
+                Results[CurrentTask] = e.Result;
             Finished[CurrentTask] = true;
             ((WebClient)sender).DownloadStringCompleted -= WebClient_DownloadStringCompleted;
             ((WebClient)sender).Dispose();
             Task.Run((Action)DownloadFile);
-            //DownloadFile();
         }
     }
 }
